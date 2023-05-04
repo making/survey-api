@@ -54,4 +54,4 @@ curl -s -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: applic
 curl -s -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_id\": \"${question3_id}\", \"respondent_id\": \"demo6\", \"choices\": [{\"question_choice_id\": \"${question3_choice5_id}\", \"answer_text\": \"検索\"}]}"
 
 # アンケート回答表示
-curl -s ${API_URL}/surveys/${survey1_id}/answers  -u ${USERNAME}:${PASSWORD} | jq .
+curl -s ${API_URL}/surveys/${survey1_id}/answers -u ${USERNAME}:${PASSWORD} | jq .
