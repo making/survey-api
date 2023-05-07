@@ -11,7 +11,7 @@ import am.ik.surveys.answer.ChosenItem;
 import am.ik.surveys.answer.DescriptiveAnswer;
 import am.ik.surveys.answer.Respondent;
 import am.ik.surveys.answer.RespondentId;
-import am.ik.surveys.question.DefaultQuestion;
+import am.ik.surveys.question.DescriptiveQuestion;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
 import am.ik.surveys.question.QuestionChoiceId;
@@ -48,7 +48,7 @@ public class Fixtures {
 					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG554"), "はい"),
 							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG555"), "いいえ")),
 					1),
-			new DefaultQuestion(QuestionId.valueOf("0C6VQGH1DC6J0"), "どういうところがいけてますか?"),
+			new DescriptiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J0"), "どういうところがいけてますか?"),
 			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J1"), "他にも取り上げて欲しい設計がありますか?",
 					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV43G54Z"), "在庫"),
 							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG550"), "カート"),

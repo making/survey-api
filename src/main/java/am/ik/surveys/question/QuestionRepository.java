@@ -3,13 +3,11 @@ package am.ik.surveys.question;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -57,7 +55,7 @@ public class QuestionRepository {
 				}
 			}
 			else {
-				questions.add(new DefaultQuestion(questionId, questionText));
+				questions.add(new DescriptiveQuestion(questionId, questionText));
 			}
 			previousQuestionId = questionId;
 		}
@@ -90,45 +88,43 @@ public class QuestionRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
 			.addValue("questionId", question.questionId().asString())
 			.addValue("questionText", question.questionText());
-		String file;
-		if (question instanceof final SelectiveQuestion selectiveQuestion) {
-			params.addValue("maxChoices", selectiveQuestion.maxChoices());
-			file = "sql/question/insertSelectiveQuestion.sql";
-		}
-		else {
-			file = "sql/question/insertQuestion.sql";
-		}
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString(file), params.getValues(),
-				params::addValue);
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/insert.sql"),
+				params.getValues(), params::addValue);
 		final int update = this.jdbcTemplate.update(sql, params);
-		if (question instanceof final SelectiveQuestion selectiveQuestion) {
-			this.insertQuestionChoices(selectiveQuestion.questionId(), selectiveQuestion.questionChoices());
+		if (question instanceof final DescriptiveQuestion descriptiveQuestion) {
+			this.insertDescriptiveQuestion(descriptiveQuestion);
+		}
+		else if (question instanceof final SelectiveQuestion selectiveQuestion) {
+			this.insertSelectiveQuestion(selectiveQuestion);
 		}
 		return update;
 	}
 
-	public int deleteById(QuestionId questionId) {
-		// check constraint manually
-		if (this.countSurveyQuestionByQuestionId(questionId) > 0) {
-			throw new DataIntegrityViolationException(
-					"Key (question_id)=(%s) is still referenced from table \"survey_question\""
-						.formatted(questionId.asString()));
-		}
-		return this.deleteQuestionById(questionId) + this.deleteSelectiveQuestionById(questionId);
-	}
-
-	int deleteQuestionById(QuestionId questionId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/deleteQuestionById.sql"),
-				params.getValues(), params::addValue);
+	int insertDescriptiveQuestion(DescriptiveQuestion question) {
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId",
+				question.questionId().asString());
+		final String sql = this.sqlGenerator.generate(
+				FileLoader.loadSqlAsString("sql/question/insertDescriptiveQuestion.sql"), params.getValues(),
+				params::addValue);
 		return this.jdbcTemplate.update(sql, params);
 	}
 
-	int deleteSelectiveQuestionById(QuestionId questionId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
+	int insertSelectiveQuestion(SelectiveQuestion question) {
+		final MapSqlParameterSource params = new MapSqlParameterSource()
+			.addValue("questionId", question.questionId().asString())
+			.addValue("maxChoices", question.maxChoices());
 		final String sql = this.sqlGenerator.generate(
-				FileLoader.loadSqlAsString("sql/question/deleteSelectiveQuestionById.sql"), params.getValues(),
+				FileLoader.loadSqlAsString("sql/question/insertSelectiveQuestion.sql"), params.getValues(),
 				params::addValue);
+		final int update = this.jdbcTemplate.update(sql, params);
+		this.insertQuestionChoices(question.questionId(), question.questionChoices());
+		return update;
+	}
+
+	public int deleteById(QuestionId questionId) {
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/deleteById.sql"),
+				params.getValues(), params::addValue);
 		return this.jdbcTemplate.update(sql, params);
 	}
 
@@ -180,14 +176,6 @@ public class QuestionRepository {
 				FileLoader.loadSqlAsString("sql/questionchoice/deleteByQuestionId.sql"), params.getValues(),
 				params::addValue);
 		return this.jdbcTemplate.update(sql, params);
-	}
-
-	long countSurveyQuestionByQuestionId(QuestionId questionId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
-		final String sql = this.sqlGenerator.generate(
-				FileLoader.loadSqlAsString("sql/questiongroupquestion/countByQuestionId.sql"), params.getValues(),
-				params::addValue);
-		return Objects.requireNonNullElse(this.jdbcTemplate.queryForObject(sql, params, Long.class), 0L);
 	}
 
 }

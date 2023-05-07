@@ -1,7 +1,7 @@
 package am.ik.surveys.question.web;
 
 import am.ik.surveys.Fixtures;
-import am.ik.surveys.question.DefaultQuestion;
+import am.ik.surveys.question.DescriptiveQuestion;
 import am.ik.surveys.question.MockQuestionRepository;
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.QuestionRepository;
@@ -96,7 +96,7 @@ class QuestionControllerTest {
 			.andExpect(jsonPath("$.question_choices").doesNotExist())
 			.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/questions/0C6VAWEVB33AD"));
 
-		assertThat(MockQuestionRepository.inserted).isInstanceOf(DefaultQuestion.class);
+		assertThat(MockQuestionRepository.inserted).isInstanceOf(DescriptiveQuestion.class);
 		assertThat(MockQuestionRepository.inserted.questionId()).isEqualTo(QuestionId.valueOf("0C6VAWEVB33AD"));
 		assertThat(MockQuestionRepository.inserted.questionText()).isEqualTo("How are you?");
 	}

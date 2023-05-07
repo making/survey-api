@@ -18,11 +18,19 @@ CREATE TABLE IF NOT EXISTS question
     question_text VARCHAR(1024) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS descriptive_question
+(
+    question_id CHAR(13) PRIMARY KEY,
+    FOREIGN KEY (question_id) REFERENCES question (question_id)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS selective_question
 (
-    question_id   CHAR(13) PRIMARY KEY,
-    question_text VARCHAR(1024) NOT NULL,
-    max_choices   INTEGER       NOT NULL
+    question_id CHAR(13) PRIMARY KEY,
+    max_choices INTEGER NOT NULL,
+    FOREIGN KEY (question_id) REFERENCES question (question_id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS question_choice
@@ -53,6 +61,8 @@ CREATE TABLE IF NOT EXISTS question_group_question
     required          BOOL     NOT NULL,
     PRIMARY KEY (question_group_id, question_id),
     FOREIGN KEY (question_group_id) REFERENCES question_group (question_group_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES question (question_id)
         ON DELETE CASCADE
 );
 
@@ -65,7 +75,9 @@ CREATE TABLE IF NOT EXISTS answer
     respondent_id     VARCHAR(128) NOT NULL,
     FOREIGN KEY (survey_id) REFERENCES survey (survey_id)
         ON DELETE CASCADE,
-    FOREIGN KEY (question_group_id, question_id) REFERENCES question_group_question (question_group_id, question_id)
+    FOREIGN KEY (question_group_id) REFERENCES question_group (question_group_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES question (question_id)
         ON DELETE CASCADE
 );
 

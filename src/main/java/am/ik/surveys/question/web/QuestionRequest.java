@@ -3,7 +3,7 @@ package am.ik.surveys.question.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.ik.surveys.question.DefaultQuestion;
+import am.ik.surveys.question.DescriptiveQuestion;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
 import am.ik.surveys.question.QuestionChoiceId;
@@ -52,7 +52,7 @@ class QuestionRequest {
 			return new SelectiveQuestion(questionId, this.questionText, choices, this.maxChoices);
 		}
 		else {
-			return new DefaultQuestion(questionId, this.questionText);
+			return new DescriptiveQuestion(questionId, this.questionText);
 		}
 	}
 
