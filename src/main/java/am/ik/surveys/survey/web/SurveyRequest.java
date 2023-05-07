@@ -8,7 +8,7 @@ import java.time.ZoneOffset;
 import am.ik.surveys.survey.Survey;
 import am.ik.surveys.survey.SurveyId;
 
-public class SurveyRequest {
+class SurveyRequest {
 
 	private String surveyTitle = "";
 

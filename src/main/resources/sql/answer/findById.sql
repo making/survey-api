@@ -2,12 +2,14 @@ SELECT ans.answer_id,
        ans.question_choice_id,
        ans.answer_text,
        ans.survey_id,
+       ans.question_group_id,
        ans.question_id,
        ans.respondent_id
 FROM (SELECT ca.answer_id,
              ca.question_choice_id,
              ca.answer_text,
              a.survey_id,
+             a.question_group_id,
              a.question_id,
              a.respondent_id
       FROM chosen_answer ca
@@ -17,6 +19,7 @@ FROM (SELECT ca.answer_id,
              NULL AS question_choice_id,
              da.answer_text,
              a.survey_id,
+             a.question_group_id,
              a.question_id,
              a.respondent_id
       FROM descriptive_answer da

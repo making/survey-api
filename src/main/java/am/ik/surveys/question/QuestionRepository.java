@@ -49,8 +49,7 @@ public class QuestionRepository {
 			if (maxChoices > 0) {
 				final QuestionChoice questionChoice = questionChoiceRowMapper.mapRow(rs, 0);
 				if (selectiveQuestion == null || !questionId.equals(previousQuestionId)) {
-					selectiveQuestion = new SelectiveQuestion(questionId, questionText, new ArrayList<>(),
-							maxChoices);
+					selectiveQuestion = new SelectiveQuestion(questionId, questionText, new ArrayList<>(), maxChoices);
 					questions.add(selectiveQuestion);
 				}
 				if (questionChoice != null) {
@@ -84,13 +83,13 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findQuestionById.sql"),
 				params.getValues(), params::addValue);
 		return Optional
-				.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, resultSetExtractor)));
+			.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, resultSetExtractor)));
 	}
 
 	public int insert(Question question) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-				.addValue("questionId", question.questionId().asString())
-				.addValue("questionText", question.questionText());
+			.addValue("questionId", question.questionId().asString())
+			.addValue("questionText", question.questionText());
 		String file;
 		if (question instanceof final SelectiveQuestion selectiveQuestion) {
 			params.addValue("maxChoices", selectiveQuestion.maxChoices());
@@ -113,7 +112,7 @@ public class QuestionRepository {
 		if (this.countSurveyQuestionByQuestionId(questionId) > 0) {
 			throw new DataIntegrityViolationException(
 					"Key (question_id)=(%s) is still referenced from table \"survey_question\""
-							.formatted(questionId.asString()));
+						.formatted(questionId.asString()));
 		}
 		return this.deleteQuestionById(questionId) + this.deleteSelectiveQuestionById(questionId);
 	}
@@ -127,8 +126,9 @@ public class QuestionRepository {
 
 	int deleteSelectiveQuestionById(QuestionId questionId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/deleteSelectiveQuestionById.sql"),
-				params.getValues(), params::addValue);
+		final String sql = this.sqlGenerator.generate(
+				FileLoader.loadSqlAsString("sql/question/deleteSelectiveQuestionById.sql"), params.getValues(),
+				params::addValue);
 		return this.jdbcTemplate.update(sql, params);
 	}
 
@@ -145,12 +145,12 @@ public class QuestionRepository {
 	public Optional<QuestionChoice> findQuestionChoiceByQuestionIdAndId(QuestionId questionId,
 			QuestionChoiceId questionChoiceId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString())
-				.addValue("questionChoiceId", questionChoiceId.asString());
+			.addValue("questionChoiceId", questionChoiceId.asString());
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questionchoice/findByQuestionIdAndId.sql"), params.getValues(),
 				params::addValue);
 		return Optional
-				.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, questionChoiceRowMapper)));
+			.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, questionChoiceRowMapper)));
 	}
 
 	public int updateQuestionChoices(SelectiveQuestion question) {
@@ -163,12 +163,12 @@ public class QuestionRepository {
 			return 0;
 		}
 		final MapSqlParameterSource[] params = questionChoices.stream()
-				.map(questionChoice -> new MapSqlParameterSource()
-						.addValue("questionChoiceId", questionChoice.questionChoiceId().asString())
-						.addValue("questionId", questionId.asString())
-						.addValue("questionChoiceText", questionChoice.questionChoiceText())
-						.addValue("allowFreeText", questionChoice.allowFreeText()))
-				.toArray(MapSqlParameterSource[]::new);
+			.map(questionChoice -> new MapSqlParameterSource()
+				.addValue("questionChoiceId", questionChoice.questionChoiceId().asString())
+				.addValue("questionId", questionId.asString())
+				.addValue("questionChoiceText", questionChoice.questionChoiceText())
+				.addValue("allowFreeText", questionChoice.allowFreeText()))
+			.toArray(MapSqlParameterSource[]::new);
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questionchoice/insert.sql"),
 				params[0]);
 		return Arrays.stream(this.jdbcTemplate.batchUpdate(sql, params)).sum();
@@ -185,7 +185,7 @@ public class QuestionRepository {
 	long countSurveyQuestionByQuestionId(QuestionId questionId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
 		final String sql = this.sqlGenerator.generate(
-				FileLoader.loadSqlAsString("sql/surveyquestion/countByQuestionId.sql"), params.getValues(),
+				FileLoader.loadSqlAsString("sql/questiongroupquestion/countByQuestionId.sql"), params.getValues(),
 				params::addValue);
 		return Objects.requireNonNullElse(this.jdbcTemplate.queryForObject(sql, params, Long.class), 0L);
 	}

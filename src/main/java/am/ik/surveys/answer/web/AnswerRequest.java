@@ -8,10 +8,13 @@ import am.ik.surveys.answer.ChosenAnswer;
 import am.ik.surveys.answer.DescriptiveAnswer;
 import am.ik.surveys.answer.RespondentId;
 import am.ik.surveys.question.QuestionId;
+import am.ik.surveys.questiongroup.QuestionGroupId;
 import am.ik.surveys.survey.SurveyId;
-import am.ik.surveys.surveyquestion.SurveyQuestionId;
 
 public class AnswerRequest {
+
+	private QuestionGroupId questionGroupId;
+
 	private QuestionId questionId;
 
 	private RespondentId respondentId;
@@ -20,6 +23,13 @@ public class AnswerRequest {
 
 	private List<ChosenItemRequest> choices;
 
+	public QuestionGroupId getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(QuestionGroupId questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
 
 	public QuestionId getQuestionId() {
 		return questionId;
@@ -54,11 +64,12 @@ public class AnswerRequest {
 	}
 
 	public Answer toAnswer(AnswerId answerId, SurveyId surveyId) {
-		final SurveyQuestionId surveyQuestionId = new SurveyQuestionId(surveyId, this.questionId);
 		if (this.answerText != null) {
-			return new DescriptiveAnswer(answerId, surveyQuestionId, this.respondentId, this.answerText);
+			return new DescriptiveAnswer(answerId, surveyId, this.questionGroupId, this.questionId, this.respondentId,
+					this.answerText);
 		}
-		return new ChosenAnswer(answerId, surveyQuestionId, this.respondentId,
+		return new ChosenAnswer(answerId, surveyId, this.questionGroupId, this.questionId, this.respondentId,
 				this.choices.stream().map(ChosenItemRequest::toChoice).toList());
 	}
+
 }

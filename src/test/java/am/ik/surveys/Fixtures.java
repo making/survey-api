@@ -17,10 +17,13 @@ import am.ik.surveys.question.QuestionChoice;
 import am.ik.surveys.question.QuestionChoiceId;
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.SelectiveQuestion;
+import am.ik.surveys.questiongroup.QuestionGroup;
+import am.ik.surveys.questiongroup.QuestionGroupId;
+import am.ik.surveys.questiongroupquestion.QuestionGroupQuestion;
+import am.ik.surveys.questiongroupquestion.QuestionGroupQuestionId;
 import am.ik.surveys.survey.Survey;
 import am.ik.surveys.survey.SurveyId;
-import am.ik.surveys.surveyquestion.SurveyQuestion;
-import am.ik.surveys.surveyquestion.SurveyQuestionId;
+import am.ik.surveys.surveyquestiongroup.SurveyQuestionGroup;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -37,6 +40,8 @@ public class Fixtures {
 	public static final Map<SurveyId, Survey> surveyMap = surveys.stream().collect(toMap(Survey::surveyId, identity()));
 
 	public static final Survey s1 = surveys.get(0);
+
+	public static final QuestionGroup qg1 = new QuestionGroup(QuestionGroupId.valueOf("0C6VQGH1DC6H1"), "テストアンケート");
 
 	public static final List<Question> questions = List.of(
 			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6HZ"), "この設計はいけてますか?",
@@ -61,16 +66,21 @@ public class Fixtures {
 
 	public static final SelectiveQuestion q3 = (SelectiveQuestion) questions.get(2);
 
-	public static final List<SurveyQuestion> surveyQuestions = List.of(
-			new SurveyQuestion(new SurveyQuestionId(s1.surveyId(), q1.questionId()), true),
-			new SurveyQuestion(new SurveyQuestionId(s1.surveyId(), q2.questionId()), false),
-			new SurveyQuestion(new SurveyQuestionId(s1.surveyId(), q3.questionId()), true));
+	public static final List<SurveyQuestionGroup> SURVEY_QUESTION_GROUPS = List
+		.of(new SurveyQuestionGroup(s1.surveyId(), qg1.questionGroupId()));
 
-	public static final SurveyQuestion sq1 = surveyQuestions.get(0);
+	public static final SurveyQuestionGroup sqg1 = SURVEY_QUESTION_GROUPS.get(0);
 
-	public static final SurveyQuestion sq2 = surveyQuestions.get(1);
+	public static final List<QuestionGroupQuestion> QUESTION_GROUP_QUESTIONS = List.of(
+			new QuestionGroupQuestion(new QuestionGroupQuestionId(qg1.questionGroupId(), q1.questionId()), true),
+			new QuestionGroupQuestion(new QuestionGroupQuestionId(qg1.questionGroupId(), q2.questionId()), false),
+			new QuestionGroupQuestion(new QuestionGroupQuestionId(qg1.questionGroupId(), q3.questionId()), true));
 
-	public static final SurveyQuestion sq3 = surveyQuestions.get(2);
+	public static final QuestionGroupQuestion qgq1 = QUESTION_GROUP_QUESTIONS.get(0);
+
+	public static final QuestionGroupQuestion qgq2 = QUESTION_GROUP_QUESTIONS.get(1);
+
+	public static final QuestionGroupQuestion qgq3 = QUESTION_GROUP_QUESTIONS.get(2);
 
 	public static final List<Respondent> respondents = List.of(new Respondent(RespondentId.valueOf("0C74NQQQPY12Y")),
 			new Respondent(RespondentId.valueOf("0C74NQQQTY12Z")),
@@ -83,24 +93,24 @@ public class Fixtures {
 	static Respondent r3 = respondents.get(2);
 
 	public static final List<Answer> answers = List.of(
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY131"), sq1.surveyQuestionId(), r1.respondentId(),
-					List.of(new ChosenItem(q1.questionChoices().get(0).questionChoiceId()))),
-			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY132"), sq2.surveyQuestionId(), r1.respondentId(),
-					"具体的なデータがあってわかりやすい"),
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY133"), sq3.surveyQuestionId(), r1.respondentId(),
-					List.of(new ChosenItem(q3.questionChoices().get(0).questionChoiceId()))),
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY134"), sq1.surveyQuestionId(), r2.respondentId(),
-					List.of(new ChosenItem(q3.questionChoices().get(1).questionChoiceId()))),
-			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY135"), sq2.surveyQuestionId(), r2.respondentId(),
-					"ER図がわかりやすい"),
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY136"), sq3.surveyQuestionId(), r2.respondentId(),
-					List.of(new ChosenItem(q3.questionChoices().get(3).questionChoiceId()))),
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY137"), sq1.surveyQuestionId(), r3.respondentId(),
-					List.of(new ChosenItem(q1.questionChoices().get(0).questionChoiceId()))),
-			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY138"), sq2.surveyQuestionId(), r3.respondentId(),
-					"ここまで複雑なモデルが必要なの"),
-			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY139"), sq3.surveyQuestionId(), r3.respondentId(),
-					List.of(new ChosenItem(q3.questionChoices().get(4).questionChoiceId(), "検索"))));
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY131"), s1.surveyId(), qg1.questionGroupId(), q1.questionId(),
+					r1.respondentId(), List.of(new ChosenItem(q1.questionChoices().get(0).questionChoiceId()))),
+			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY132"), s1.surveyId(), qg1.questionGroupId(),
+					q2.questionId(), r1.respondentId(), "具体的なデータがあってわかりやすい"),
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY133"), s1.surveyId(), qg1.questionGroupId(), q3.questionId(),
+					r1.respondentId(), List.of(new ChosenItem(q3.questionChoices().get(0).questionChoiceId()))),
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY134"), s1.surveyId(), qg1.questionGroupId(), q1.questionId(),
+					r2.respondentId(), List.of(new ChosenItem(q3.questionChoices().get(1).questionChoiceId()))),
+			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY135"), s1.surveyId(), qg1.questionGroupId(),
+					q2.questionId(), r2.respondentId(), "ER図がわかりやすい"),
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY136"), s1.surveyId(), qg1.questionGroupId(), q3.questionId(),
+					r2.respondentId(), List.of(new ChosenItem(q3.questionChoices().get(3).questionChoiceId()))),
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY137"), s1.surveyId(), qg1.questionGroupId(), q1.questionId(),
+					r3.respondentId(), List.of(new ChosenItem(q1.questionChoices().get(0).questionChoiceId()))),
+			new DescriptiveAnswer(AnswerId.valueOf("0C74NQQQTY138"), s1.surveyId(), qg1.questionGroupId(),
+					q2.questionId(), r3.respondentId(), "ここまで複雑なモデルが必要なの"),
+			new ChosenAnswer(AnswerId.valueOf("0C74NQQQTY139"), s1.surveyId(), qg1.questionGroupId(), q3.questionId(),
+					r3.respondentId(), List.of(new ChosenItem(q3.questionChoices().get(4).questionChoiceId(), "検索"))));
 
 	public static final Map<AnswerId, Answer> answerMap = answers.stream().collect(toMap(Answer::answerId, identity()));
 

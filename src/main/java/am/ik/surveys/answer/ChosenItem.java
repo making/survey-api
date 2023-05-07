@@ -10,8 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @param questionChoiceId 設問選択肢ID
  * @param answerText 記述回答
  */
-public record ChosenItem(QuestionChoiceId questionChoiceId,
-						 @JsonInclude(Include.NON_NULL) String answerText) {
+public record ChosenItem(QuestionChoiceId questionChoiceId, @JsonInclude(Include.NON_NULL) String answerText) {
 
 	public ChosenItem(QuestionChoiceId questionChoiceId) {
 		this(questionChoiceId, null);

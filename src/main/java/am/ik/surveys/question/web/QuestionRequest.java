@@ -11,7 +11,7 @@ import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.SelectiveQuestion;
 import am.ik.surveys.tsid.TsidGenerator;
 
-public class QuestionRequest {
+class QuestionRequest {
 
 	private String questionText;
 

@@ -36,7 +36,8 @@ public class AnswerController {
 	}
 
 	@GetMapping(path = "/surveys/{surveyId}/answers")
-	public List<Answer> getAnswersBySurveyId(@PathVariable SurveyId surveyId, @RequestParam(required = false) QuestionId questionId) {
+	public List<Answer> getAnswersBySurveyId(@PathVariable SurveyId surveyId,
+			@RequestParam(required = false) QuestionId questionId) {
 		return this.answerRepository.findBySurveyId(surveyId);
 	}
 
@@ -53,8 +54,8 @@ public class AnswerController {
 	@GetMapping(path = "/answers/{answerId}")
 	public Answer getAnswer(@PathVariable AnswerId answerId) {
 		return this.answerRepository.findById(answerId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-						"The given answer id is not found (%s)".formatted(answerId.asString())));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"The given answer id is not found (%s)".formatted(answerId.asString())));
 	}
 
 	@DeleteMapping(path = "/answers/{answerId}")

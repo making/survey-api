@@ -6,6 +6,12 @@ CREATE TABLE IF NOT EXISTS survey
     end_date_time   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS question_group
+(
+    question_group_id    CHAR(13) PRIMARY KEY,
+    question_group_title VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS question
 (
     question_id   CHAR(13) PRIMARY KEY,
@@ -29,23 +35,37 @@ CREATE TABLE IF NOT EXISTS question_choice
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS survey_question
+CREATE TABLE IF NOT EXISTS survey_question_group
 (
-    survey_id   CHAR(13) NOT NULL,
-    question_id CHAR(13) NOT NULL,
-    required    BOOL     NOT NULL,
-    PRIMARY KEY (survey_id, question_id),
+    survey_id         CHAR(13) NOT NULL,
+    question_group_id CHAR(13) NOT NULL,
+    PRIMARY KEY (survey_id, question_group_id),
     FOREIGN KEY (survey_id) REFERENCES survey (survey_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (question_group_id) REFERENCES question_group (question_group_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS question_group_question
+(
+    question_group_id CHAR(13) NOT NULL,
+    question_id       CHAR(13) NOT NULL,
+    required          BOOL     NOT NULL,
+    PRIMARY KEY (question_group_id, question_id),
+    FOREIGN KEY (question_group_id) REFERENCES question_group (question_group_id)
         ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS answer
 (
-    answer_id     CHAR(13) PRIMARY KEY,
-    survey_id     CHAR(13)     NOT NULL,
-    question_id   CHAR(13)     NOT NULL,
-    respondent_id VARCHAR(128) NOT NULL,
-    FOREIGN KEY (survey_id, question_id) REFERENCES survey_question (survey_id, question_id)
+    answer_id         CHAR(13) PRIMARY KEY,
+    survey_id         CHAR(13)     NOT NULL,
+    question_group_id CHAR(13)     NOT NULL,
+    question_id       CHAR(13)     NOT NULL,
+    respondent_id     VARCHAR(128) NOT NULL,
+    FOREIGN KEY (survey_id) REFERENCES survey (survey_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (question_group_id, question_id) REFERENCES question_group_question (question_group_id, question_id)
         ON DELETE CASCADE
 );
 
