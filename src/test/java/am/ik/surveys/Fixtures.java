@@ -19,11 +19,11 @@ import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.SelectiveQuestion;
 import am.ik.surveys.questiongroup.QuestionGroup;
 import am.ik.surveys.questiongroup.QuestionGroupId;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestion;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestionId;
+import am.ik.surveys.questiongroup.QuestionGroupQuestion;
+import am.ik.surveys.questiongroup.QuestionGroupQuestionId;
 import am.ik.surveys.survey.Survey;
 import am.ik.surveys.survey.SurveyId;
-import am.ik.surveys.surveyquestiongroup.SurveyQuestionGroup;
+import am.ik.surveys.survey.SurveyQuestionGroup;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;

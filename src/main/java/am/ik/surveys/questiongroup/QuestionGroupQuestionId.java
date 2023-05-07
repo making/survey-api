@@ -1,4 +1,4 @@
-package am.ik.surveys.questiongroupquestion;
+package am.ik.surveys.questiongroup;
 
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.questiongroup.QuestionGroupId;

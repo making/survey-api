@@ -1,7 +1,7 @@
-package am.ik.surveys.questiongroupquestion.web;
+package am.ik.surveys.questiongroup.web;
 
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestion;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestionId;
+import am.ik.surveys.questiongroup.QuestionGroupQuestion;
+import am.ik.surveys.questiongroup.QuestionGroupQuestionId;
 
 class QuestionGroupQuestionRequest {
 

@@ -1,10 +1,9 @@
-package am.ik.surveys.questiongroupquestion;
+package am.ik.surveys.questiongroup;
 
 import java.util.List;
 import java.util.Objects;
 
 import am.ik.surveys.question.QuestionId;
-import am.ik.surveys.questiongroup.QuestionGroupId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 

@@ -1,4 +1,4 @@
-package am.ik.surveys.questiongroupquestion;
+package am.ik.surveys.questiongroup;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 

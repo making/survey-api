@@ -1,12 +1,12 @@
-package am.ik.surveys.questiongroupquestion.web;
+package am.ik.surveys.questiongroup.web;
 
 import java.util.List;
 
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.questiongroup.QuestionGroupId;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestion;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestionId;
-import am.ik.surveys.questiongroupquestion.QuestionGroupQuestionRepository;
+import am.ik.surveys.questiongroup.QuestionGroupQuestion;
+import am.ik.surveys.questiongroup.QuestionGroupQuestionId;
+import am.ik.surveys.questiongroup.QuestionGroupQuestionRepository;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
