@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS survey
 CREATE TABLE IF NOT EXISTS question_group
 (
     question_group_id    CHAR(13) PRIMARY KEY,
-    question_group_title VARCHAR(255) NOT NULL
+    question_group_title VARCHAR(255) NOT NULL,
+    question_group_type  VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS question

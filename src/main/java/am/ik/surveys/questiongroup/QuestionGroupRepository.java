@@ -28,7 +28,8 @@ public class QuestionGroupRepository {
 		public QuestionGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
 			final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getString("question_group_id"));
 			final String questionGroupTitle = rs.getString("question_group_title");
-			return new QuestionGroup(questionGroupId, questionGroupTitle);
+			final String questionGroupType = rs.getString("question_group_type");
+			return new QuestionGroup(questionGroupId, questionGroupTitle, questionGroupType);
 		}
 	};
 
@@ -57,7 +58,8 @@ public class QuestionGroupRepository {
 	public int insert(QuestionGroup questionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
 			.addValue("questionGroupId", questionGroup.questionGroupId().asString())
-			.addValue("questionGroupTitle", questionGroup.questionGroupTitle());
+			.addValue("questionGroupTitle", questionGroup.questionGroupTitle())
+			.addValue("questionGroupType", questionGroup.questionGroupType());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/insert.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcTemplate.update(sql, params);

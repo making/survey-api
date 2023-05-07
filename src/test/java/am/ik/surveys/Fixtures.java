@@ -41,7 +41,8 @@ public class Fixtures {
 
 	public static final Survey s1 = surveys.get(0);
 
-	public static final QuestionGroup qg1 = new QuestionGroup(QuestionGroupId.valueOf("0C6VQGH1DC6H1"), "テストアンケート");
+	public static final QuestionGroup qg1 = new QuestionGroup(QuestionGroupId.valueOf("0C6VQGH1DC6H1"), "テストアンケート",
+			"default");
 
 	public static final List<Question> questions = List.of(
 			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6HZ"), "この設計はいけてますか?",

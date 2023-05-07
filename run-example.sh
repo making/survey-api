@@ -10,7 +10,7 @@ PASSWORD=${PASSWORD:-admin}
 survey1_id=$(curl -sf -XPOST ${API_URL}/surveys -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"survey_title":"テストアンケート", "start_date_time":"2019-10-01T00:00:00.000+09:00", "end_date_time":"2020-10-01T00:00:00.000+09:00"}' | jq -r .survey_id)
 
 # 設問グループ作成
-question_group1_id=$(curl -sf -XPOST ${API_URL}/question_groups -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_group_title":"設計に関するアンケート"}' | jq -r .question_group_id)
+question_group1_id=$(curl -sf -XPOST ${API_URL}/question_groups -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_group_title":"設計に関するアンケート", "question_group_type": "default"}' | jq -r .question_group_id)
 
 # 選択回答設問作成
 question1_id=$(curl -sf -XPOST ${API_URL}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "この設計はいけてますか?", "max_choices": 1}' | jq -r .question_id)
