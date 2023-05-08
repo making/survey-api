@@ -2,6 +2,7 @@ package am.ik.surveys.question.web;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,6 +45,11 @@ public class QuestionController {
 	@GetMapping(path = "")
 	public List<Question> getQuestions() {
 		return this.questionRepository.findAll();
+	}
+
+	@GetMapping(path = "", params = "question_ids")
+	public List<Question> getQuestions(@RequestParam(name = "question_ids") Set<QuestionId> questionIds) {
+		return this.questionRepository.findByIds(questionIds);
 	}
 
 	@PostMapping(path = "")
