@@ -16,7 +16,6 @@ import am.ik.surveys.questiongroup.QuestionGroupRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import static java.util.function.Function.identity;
@@ -40,7 +39,7 @@ public class QuestionGroupHandler {
 	}
 
 	@Transactional
-	public QuestionGroupResponse getQuestionGroup(@PathVariable QuestionGroupId questionGroupId) {
+	public QuestionGroupResponse getQuestionGroup(QuestionGroupId questionGroupId) {
 		final QuestionGroup questionGroup = this.questionGroupRepository.findById(questionGroupId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 					"The given question group id is not found (%s)".formatted(questionGroupId.asString())));
