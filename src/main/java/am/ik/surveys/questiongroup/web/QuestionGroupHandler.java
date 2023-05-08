@@ -38,7 +38,7 @@ public class QuestionGroupHandler {
 		this.questionRepository = questionRepository;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public QuestionGroupResponse getQuestionGroup(QuestionGroupId questionGroupId) {
 		final QuestionGroup questionGroup = this.questionGroupRepository.findById(questionGroupId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,

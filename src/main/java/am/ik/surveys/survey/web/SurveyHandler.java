@@ -50,7 +50,7 @@ public class SurveyHandler {
 		this.questionRepository = questionRepository;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public SurveyResponse getSurvey(SurveyId surveyId, boolean includeQuestions) {
 		final Survey survey = this.surveyRepository.findById(surveyId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
