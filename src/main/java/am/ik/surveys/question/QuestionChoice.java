@@ -2,7 +2,7 @@ package am.ik.surveys.question;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import am.ik.surveys.json.IncludeCreatedAt;
 
 /**
  * 設問選択肢
@@ -11,12 +11,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param questionChoiceText 選択肢本文
  * @param allowFreeText 自由記述可
  */
-public record QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText, boolean allowFreeText) {
+public record QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText,
+		boolean allowFreeText) implements IncludeCreatedAt {
 	public QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText) {
 		this(questionChoiceId, questionChoiceText, false);
 	}
 
-	@JsonProperty
+	@Override
 	public Instant createdAt() {
 		return questionChoiceId.asInstant();
 	}

@@ -2,12 +2,13 @@ package am.ik.surveys.questiongroup;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import am.ik.surveys.json.IncludeCreatedAt;
 
-public record QuestionGroup(QuestionGroupId questionGroupId, String questionGroupTitle, String questionGroupType) {
+public record QuestionGroup(QuestionGroupId questionGroupId, String questionGroupTitle,
+		String questionGroupType) implements IncludeCreatedAt {
 
-	@JsonProperty
-	Instant createdAt() {
+	@Override
+	public Instant createdAt() {
 		return this.questionGroupId.asInstant();
 	}
 }

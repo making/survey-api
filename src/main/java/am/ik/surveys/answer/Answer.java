@@ -2,12 +2,12 @@ package am.ik.surveys.answer;
 
 import java.time.Instant;
 
+import am.ik.surveys.json.IncludeCreatedAt;
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.questiongroup.QuestionGroupId;
 import am.ik.surveys.survey.SurveyId;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-public sealed interface Answer permits DescriptiveAnswer, ChosenAnswer {
+public sealed interface Answer extends IncludeCreatedAt permits DescriptiveAnswer, ChosenAnswer {
 
 	AnswerId answerId();
 
@@ -19,7 +19,7 @@ public sealed interface Answer permits DescriptiveAnswer, ChosenAnswer {
 
 	RespondentId respondentId();
 
-	@JsonProperty
+	@Override
 	default Instant createdAt() {
 		return this.answerId().asInstant();
 	}
