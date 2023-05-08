@@ -7,6 +7,8 @@ public class QuestionChoiceRequest {
 
 	private String questionChoiceText;
 
+	private int score = 0;
+
 	private boolean allowFreeText = false;
 
 	public String getQuestionChoiceText() {
@@ -15,6 +17,14 @@ public class QuestionChoiceRequest {
 
 	public void setQuestionChoiceText(String questionChoiceText) {
 		this.questionChoiceText = questionChoiceText;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	public boolean isAllowFreeText() {
@@ -26,7 +36,7 @@ public class QuestionChoiceRequest {
 	}
 
 	public QuestionChoice toQuestionChoice(QuestionChoiceId questionChoiceId) {
-		return new QuestionChoice(questionChoiceId, this.questionChoiceText, this.allowFreeText);
+		return new QuestionChoice(questionChoiceId, this.questionChoiceText, this.score, this.allowFreeText);
 	}
 
 }

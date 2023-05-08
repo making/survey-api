@@ -3,12 +3,14 @@ SELECT que.question_id,
        que.max_choices,
        que.question_choice_id,
        que.question_choice_text,
+       que.score,
        que.allow_free_text
 FROM (SELECT dq.question_id,
              q.question_text,
              NULL AS max_choices,
              NULL AS question_choice_id,
              NULL AS question_choice_text,
+             NULL AS score,
              NULL AS allow_free_text
       FROM descriptive_question AS dq
                LEFT JOIN question q on q.question_id = dq.question_id
@@ -18,6 +20,7 @@ FROM (SELECT dq.question_id,
              sq.max_choices,
              qc.question_choice_id,
              qc.question_choice_text,
+             qc.score,
              qc.allow_free_text
       FROM selective_question AS sq
                LEFT JOIN question q on q.question_id = sq.question_id

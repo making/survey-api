@@ -34,8 +34,9 @@ public class QuestionRepository {
 		}
 		final QuestionChoiceId questionChoiceId = QuestionChoiceId.valueOf(s);
 		final String questionChoiceText = rs.getString("question_choice_text");
+		final int score = rs.getInt("score");
 		final boolean allowFreeText = rs.getBoolean("allow_free_text");
-		return new QuestionChoice(questionChoiceId, questionChoiceText, allowFreeText);
+		return new QuestionChoice(questionChoiceId, questionChoiceText, score, allowFreeText);
 	};
 
 	private final ResultSetExtractor<List<Question>> resultSetExtractor = rs -> {
@@ -177,6 +178,7 @@ public class QuestionRepository {
 				.addValue("questionChoiceId", questionChoice.questionChoiceId().asString())
 				.addValue("questionId", questionId.asString())
 				.addValue("questionChoiceText", questionChoice.questionChoiceText())
+				.addValue("score", questionChoice.score())
 				.addValue("allowFreeText", questionChoice.allowFreeText()))
 			.toArray(MapSqlParameterSource[]::new);
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questionchoice/insert.sql"),

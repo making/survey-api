@@ -46,16 +46,16 @@ public class Fixtures {
 
 	public static final List<Question> questions = List.of(
 			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6HZ"), "この設計はいけてますか?",
-					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG554"), "はい"),
-							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG555"), "いいえ")),
+					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG554"), "はい", 1),
+							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG555"), "いいえ", 0)),
 					1),
 			new DescriptiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J0"), "どういうところがいけてますか?"),
 			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J1"), "他にも取り上げて欲しい設計がありますか?",
-					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV43G54Z"), "在庫"),
-							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG550"), "カート"),
-							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG551"), "お気に入り"),
-							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG552"), "リコメンド"),
-							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG553"), "その他", true)),
+					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV43G54Z"), "在庫", 0),
+							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG550"), "カート", 0),
+							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG551"), "お気に入り", 0),
+							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG552"), "リコメンド", 0),
+							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG553"), "その他", 0, true)),
 					3));
 
 	public static final Map<QuestionId, Question> questionMap = questions.stream()

@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS question_choice
     question_choice_id   CHAR(13) PRIMARY KEY,
     question_id          CHAR(13)      NOT NULL,
     question_choice_text VARCHAR(1024) NOT NULL,
+    score                SMALLINT      NOT NULL DEFAULT 0,
     allow_free_text      BOOL          NOT NULL DEFAULT FALSE,
     FOREIGN KEY (question_id) REFERENCES selective_question (question_id)
         ON DELETE CASCADE

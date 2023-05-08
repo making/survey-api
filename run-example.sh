@@ -28,14 +28,14 @@ curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_q
 curl -sf -XPUT ${API_URL}/surveys/${survey1_id}/survey_question_groups/${question_group1_id} -u ${USERNAME}:${PASSWORD}
 
 # 設問選択肢追加
-question1_choice1_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "はい", "allow_free_text": false}' | jq -r .question_choice_id)
-question1_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "いいえ", "allow_free_text": false}' | jq -r .question_choice_id)
+question1_choice1_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "はい", "score": 1, "allow_free_text": false}' | jq -r .question_choice_id)
+question1_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "いいえ", "score": 0, "allow_free_text": false}' | jq -r .question_choice_id)
 
-question3_choice1_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "在庫", "allow_free_text": false}' | jq -r .question_choice_id)
-question3_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "カート", "allow_free_text": false}' | jq -r .question_choice_id)
-question3_choice3_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "お気に入り", "allow_free_text": false}' | jq -r .question_choice_id)
-question3_choice4_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "リコメンド", "allow_free_text": false}' | jq -r .question_choice_id)
-question3_choice5_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "その他", "allow_free_text": true}' | jq -r .question_choice_id)
+question3_choice1_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "在庫", "score": 0, "allow_free_text": false}' | jq -r .question_choice_id)
+question3_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "カート", "score": 0, "allow_free_text": false}' | jq -r .question_choice_id)
+question3_choice3_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "お気に入り", "score": 0, "allow_free_text": false}' | jq -r .question_choice_id)
+question3_choice4_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "リコメンド", "score": 0, "allow_free_text": false}' | jq -r .question_choice_id)
+question3_choice5_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "その他", "score": 0, "allow_free_text": true}' | jq -r .question_choice_id)
 
 # アンケート表示
 curl -sf "${API_URL}/surveys/${survey1_id}?include_questions=true" | jq .

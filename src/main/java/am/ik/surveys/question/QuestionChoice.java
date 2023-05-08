@@ -11,10 +11,10 @@ import am.ik.surveys.json.IncludeCreatedAt;
  * @param questionChoiceText 選択肢本文
  * @param allowFreeText 自由記述可
  */
-public record QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText,
+public record QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText, int score,
 		boolean allowFreeText) implements IncludeCreatedAt {
-	public QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText) {
-		this(questionChoiceId, questionChoiceText, false);
+	public QuestionChoice(QuestionChoiceId questionChoiceId, String questionChoiceText, int score) {
+		this(questionChoiceId, questionChoiceText, score, false);
 	}
 
 	@Override
