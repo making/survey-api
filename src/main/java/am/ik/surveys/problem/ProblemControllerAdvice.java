@@ -80,7 +80,7 @@ public class ProblemControllerAdvice {
 	private ProblemDetail setTraceId(ProblemDetail problemDetail) {
 		final Span currentSpan = tracer.currentSpan();
 		if (currentSpan != null) {
-			problemDetail.setProperty("traceId", currentSpan.context().traceId());
+			problemDetail.setProperty("trace_id", currentSpan.context().traceId());
 		}
 		return problemDetail;
 	}
