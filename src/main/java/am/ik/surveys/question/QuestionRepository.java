@@ -2,8 +2,10 @@ package am.ik.surveys.question;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
@@ -70,18 +72,30 @@ public class QuestionRepository {
 	@Transactional(readOnly = true)
 	public List<Question> findAll() {
 		final MapSqlParameterSource params = new MapSqlParameterSource();
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findAllQuestion.sql"),
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findAll.sql"),
+				params.getValues(), params::addValue);
+		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
+	}
+
+	@Transactional
+	public List<Question> findByIds(Set<QuestionId> questionIds) {
+		if (questionIds.isEmpty()) {
+			return List.of();
+		}
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionIds", questionIds);
+		final Iterator<QuestionId> itr = questionIds.iterator();
+		int i = 0;
+		while (itr.hasNext()) {
+			params.addValue("questionIds[%d]".formatted(i++), itr.next().asString());
+		}
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findByIds.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
 	}
 
 	@Transactional(readOnly = true)
 	public Optional<Question> findById(QuestionId questionId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findQuestionById.sql"),
-				params.getValues(), params::addValue);
-		return Optional
-			.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, resultSetExtractor)));
+		return Optional.ofNullable(DataAccessUtils.singleResult(this.findByIds(Set.of(questionId))));
 	}
 
 	public int insert(Question question) {

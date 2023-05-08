@@ -1,6 +1,8 @@
 package am.ik.surveys.questiongroup;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.util.FileLoader;
@@ -34,10 +36,22 @@ public class QuestionGroupQuestionRepository {
 
 	@Transactional(readOnly = true)
 	public List<QuestionGroupQuestion> findByQuestionGroupId(QuestionGroupId questionGroupId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupId",
-				questionGroupId.asString());
+		return this.findByQuestionGroupIds(Set.of(questionGroupId));
+	}
+
+	@Transactional(readOnly = true)
+	public List<QuestionGroupQuestion> findByQuestionGroupIds(Set<QuestionGroupId> questionGroupIds) {
+		if (questionGroupIds.isEmpty()) {
+			return List.of();
+		}
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupIds", questionGroupIds);
+		final Iterator<QuestionGroupId> itr = questionGroupIds.iterator();
+		int i = 0;
+		while (itr.hasNext()) {
+			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().asString());
+		}
 		final String sql = this.sqlGenerator.generate(
-				FileLoader.loadSqlAsString("sql/questiongroupquestion/findByQuestionGroupId.sql"), params.getValues(),
+				FileLoader.loadSqlAsString("sql/questiongroupquestion/findByQuestionGroupIds.sql"), params.getValues(),
 				params::addValue);
 		return this.jdbcTemplate.query(sql, params, rowMapper);
 	}

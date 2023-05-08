@@ -2,8 +2,10 @@ package am.ik.surveys.questiongroup;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
@@ -48,11 +50,23 @@ public class QuestionGroupRepository {
 
 	@Transactional(readOnly = true)
 	public Optional<QuestionGroup> findById(QuestionGroupId questionGroupId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupId",
-				questionGroupId.asString());
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findById.sql"),
+		return Optional.ofNullable(DataAccessUtils.singleResult(this.findByIds(Set.of(questionGroupId))));
+	}
+
+	@Transactional(readOnly = true)
+	public List<QuestionGroup> findByIds(Set<QuestionGroupId> questionGroupIds) {
+		if (questionGroupIds.isEmpty()) {
+			return List.of();
+		}
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupIds", questionGroupIds);
+		final Iterator<QuestionGroupId> itr = questionGroupIds.iterator();
+		int i = 0;
+		while (itr.hasNext()) {
+			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().asString());
+		}
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findByIds.sql"),
 				params.getValues(), params::addValue);
-		return Optional.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, rowMapper)));
+		return this.jdbcTemplate.query(sql, params, rowMapper);
 	}
 
 	public int insert(QuestionGroup questionGroup) {

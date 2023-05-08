@@ -27,9 +27,6 @@ curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_q
 # アンケートと設問グループをマッピング
 curl -sf -XPUT ${API_URL}/surveys/${survey1_id}/survey_question_groups/${question_group1_id} -u ${USERNAME}:${PASSWORD}
 
-# アンケート表示
-curl -sf ${API_URL}/surveys/${survey1_id} | jq .
-
 # 設問選択肢追加
 question1_choice1_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "はい", "allow_free_text": false}' | jq -r .question_choice_id)
 question1_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question1_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "いいえ", "allow_free_text": false}' | jq -r .question_choice_id)
@@ -39,6 +36,9 @@ question3_choice2_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/ques
 question3_choice3_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "お気に入り", "allow_free_text": false}' | jq -r .question_choice_id)
 question3_choice4_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "リコメンド", "allow_free_text": false}' | jq -r .question_choice_id)
 question3_choice5_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "その他", "allow_free_text": true}' | jq -r .question_choice_id)
+
+# アンケート表示
+curl -sf "${API_URL}/surveys/${survey1_id}?include_questions=true" | jq .
 
 # 選択回答作成
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question1_id}\", \"respondent_id\": \"demo1\", \"choices\": [{\"question_choice_id\": \"${question1_choice1_id}\"}]}"

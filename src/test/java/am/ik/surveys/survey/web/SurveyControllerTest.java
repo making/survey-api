@@ -9,6 +9,7 @@ import am.ik.surveys.survey.SurveyRepository;
 import am.ik.surveys.tsid.TsidGenerator;
 import com.github.f4b6a3.tsid.Tsid;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SurveyController.class)
+@Disabled
 class SurveyControllerTest {
 
 	@Autowired

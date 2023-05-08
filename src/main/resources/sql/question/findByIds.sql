@@ -22,5 +22,5 @@ FROM (SELECT dq.question_id,
       FROM selective_question AS sq
                LEFT JOIN question q on q.question_id = sq.question_id
                LEFT JOIN question_choice AS qc ON sq.question_id = qc.question_id) que
-WHERE question_id = /*[# mb:p="questionId"]*/ '0C6THP503VM0J' /*[/]*/
+WHERE question_id IN (/*[# mb:p="questionIds"]*/ '0C6THP503VM0J' /*[/]*/)
 ORDER BY question_id, question_choice_id
