@@ -77,7 +77,7 @@ public class QuestionRepository {
 		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Question> findByIds(Set<QuestionId> questionIds) {
 		if (questionIds.isEmpty()) {
 			return List.of();
