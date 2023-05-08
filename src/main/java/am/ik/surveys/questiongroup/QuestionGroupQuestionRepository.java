@@ -1,13 +1,11 @@
 package am.ik.surveys.questiongroup;
 
 import java.util.List;
-import java.util.Objects;
 
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -44,21 +42,8 @@ public class QuestionGroupQuestionRepository {
 		return this.jdbcTemplate.query(sql, params, rowMapper);
 	}
 
-	long countQuestionById(QuestionId questionId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/countById.sql"),
-				params.getValues(), params::addValue);
-		return Objects.requireNonNullElse(this.jdbcTemplate.queryForObject(sql, params, Long.class), 0L);
-	}
-
 	public int insert(QuestionGroupQuestion questionGroupQuestion) {
 		final QuestionGroupQuestionId questionGroupQuestionId = questionGroupQuestion.questionGroupQuestionId();
-		// check constraint manually
-		if (this.countQuestionById(questionGroupQuestionId.questionId()) == 0) {
-			throw new DataIntegrityViolationException(
-					"Key (question_id)=(%s) is not present in table \"question\" or \"selective_question\""
-						.formatted(questionGroupQuestionId.questionId().asString()));
-		}
 		final MapSqlParameterSource params = new MapSqlParameterSource()
 			.addValue("questionGroupId", questionGroupQuestionId.questionGroupId().asString())
 			.addValue("questionId", questionGroupQuestionId.questionId().asString())
