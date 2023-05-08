@@ -8,12 +8,10 @@ import am.ik.surveys.question.QuestionChoice;
 import am.ik.surveys.question.QuestionChoiceId;
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.QuestionRepository;
-import am.ik.surveys.question.SelectiveQuestion;
 import am.ik.surveys.tsid.TsidGenerator;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,11 +27,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(path = "/questions")
 public class QuestionController {
 
+	private final QuestionHandler questionHandler;
+
 	private final QuestionRepository questionRepository;
 
 	private final TsidGenerator tsidGenerator;
 
-	public QuestionController(QuestionRepository questionRepository, TsidGenerator tsidGenerator) {
+	public QuestionController(QuestionHandler questionHandler, QuestionRepository questionRepository,
+			TsidGenerator tsidGenerator) {
+		this.questionHandler = questionHandler;
 		this.questionRepository = questionRepository;
 		this.tsidGenerator = tsidGenerator;
 	}
@@ -71,23 +73,12 @@ public class QuestionController {
 	}
 
 	@PostMapping(path = "/{questionId}/question_choices")
-	@Transactional
 	public ResponseEntity<QuestionChoice> postQuestionChoices(@PathVariable QuestionId questionId,
 			@RequestBody QuestionChoiceRequest request, UriComponentsBuilder builder) {
-		final Question question = this.questionRepository.findById(questionId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"The given question id is not found (%s)".formatted(questionId.asString())));
-		if (question instanceof final SelectiveQuestion selectiveQuestion) {
-			final QuestionChoiceId questionChoiceId = new QuestionChoiceId(this.tsidGenerator.generate());
-			final QuestionChoice questionChoice = request.toQuestionChoice(questionChoiceId);
-			this.questionRepository.updateQuestionChoices(selectiveQuestion.addQuestionChoice(questionChoice));
-			final URI location = builder.replacePath("/{questionId}/question_choices/{questionChoiceId}")
-				.build(questionId.asString(), questionChoiceId.asString());
-			return ResponseEntity.created(location).body(questionChoice);
-		}
-		else {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given question is selective.");
-		}
+		final QuestionChoice questionChoice = this.questionHandler.postQuestionChoices(questionId, request);
+		final URI location = builder.replacePath("/{questionId}/question_choices/{questionChoiceId}")
+			.build(questionId.asString(), questionChoice.questionChoiceId().asString());
+		return ResponseEntity.created(location).body(questionChoice);
 	}
 
 	@GetMapping(path = "/{questionId}/question_choices/{questionChoiceId}")
@@ -100,19 +91,10 @@ public class QuestionController {
 	}
 
 	@DeleteMapping(path = "/{questionId}/question_choices/{questionChoiceId}")
-	@Transactional
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteQuestionChoice(@PathVariable QuestionId questionId,
 			@PathVariable QuestionChoiceId questionChoiceId) {
-		final Question question = this.questionRepository.findById(questionId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"The given question id is not found (%s)".formatted(questionId.asString())));
-		if (question instanceof final SelectiveQuestion selectiveQuestion) {
-			this.questionRepository.updateQuestionChoices(selectiveQuestion.removeQuestionChoices(questionChoiceId));
-		}
-		else {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given question is selective.");
-		}
+		this.questionHandler.deleteQuestionChoice(questionId, questionChoiceId);
 	}
 
 }
