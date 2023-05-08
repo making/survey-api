@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.StreamUtils;
 
 public class FileLoader {
 
@@ -21,7 +20,7 @@ public class FileLoader {
 	public static String loadAsString(String file) {
 		return cache.computeIfAbsent(file, f -> {
 			try (final InputStream stream = new ClassPathResource(file).getInputStream()) {
-				return StreamUtils.copyToString(stream, StandardCharsets.UTF_8);
+				return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 			}
 			catch (IOException e) {
 				throw new UncheckedIOException(e);
