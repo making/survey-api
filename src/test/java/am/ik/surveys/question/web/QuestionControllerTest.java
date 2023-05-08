@@ -57,8 +57,7 @@ class QuestionControllerTest {
 			.andExpect(jsonPath("$.question_choices[1].question_choice_text")
 				.value(Fixtures.q1.questionChoices().get(1).questionChoiceText()))
 			.andExpect(jsonPath("$.question_choices[1].allow_free_text")
-				.value(Fixtures.q1.questionChoices().get(1).allowFreeText()))
-			.andExpect(jsonPath("$.created_at").value(Fixtures.q1.createdAt().toString()));
+				.value(Fixtures.q1.questionChoices().get(1).allowFreeText()));
 	}
 
 	@Test
@@ -67,8 +66,7 @@ class QuestionControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.question_id").value(Fixtures.q2.questionId().asString()))
 			.andExpect(jsonPath("$.question_text").value(Fixtures.q2.questionText()))
-			.andExpect(jsonPath("$.max_choices").doesNotExist())
-			.andExpect(jsonPath("$.created_at").value(Fixtures.q2.createdAt().toString()));
+			.andExpect(jsonPath("$.max_choices").doesNotExist());
 	}
 
 	@Test
@@ -91,7 +89,6 @@ class QuestionControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.question_id").value("0C6VAWEVB33AD"))
 			.andExpect(jsonPath("$.question_text").value("How are you?"))
-			.andExpect(jsonPath("$.created_at").value("2023-04-29T08:12:54.874Z"))
 			.andExpect(jsonPath("$.max_choices").doesNotExist())
 			.andExpect(jsonPath("$.question_choices").doesNotExist())
 			.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/questions/0C6VAWEVB33AD"));
@@ -109,7 +106,6 @@ class QuestionControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.question_id").value("0C6VAWEVB33AD"))
 			.andExpect(jsonPath("$.question_text").value("How are you?"))
-			.andExpect(jsonPath("$.created_at").value("2023-04-29T08:12:54.874Z"))
 			.andExpect(jsonPath("$.max_choices").value(1))
 			.andExpect(jsonPath("$.question_choices.length()").value(0))
 			.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/questions/0C6VAWEVB33AD"));

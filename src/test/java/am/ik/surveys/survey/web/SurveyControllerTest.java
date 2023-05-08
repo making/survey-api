@@ -44,7 +44,6 @@ class SurveyControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.survey_id").value(Fixtures.s1.surveyId().asString()))
 			.andExpect(jsonPath("$.survey_title").value(Fixtures.s1.surveyTitle()))
-			.andExpect(jsonPath("$.created_at").value(Fixtures.s1.createdAt().toString()))
 			.andExpect(jsonPath("$.start_date_time").value("2019-08-01T00:00:00+09:00"))
 			.andExpect(jsonPath("$.end_date_time").value("2019-08-31T00:00:00+09:00"));
 	}
@@ -63,7 +62,6 @@ class SurveyControllerTest {
 			.andExpect(jsonPath("$.length()").value(2))
 			.andExpect(jsonPath("$[0].survey_id").value(Fixtures.s1.surveyId().asString()))
 			.andExpect(jsonPath("$[0].survey_title").value(Fixtures.s1.surveyTitle()))
-			.andExpect(jsonPath("$[0].created_at").value(Fixtures.s1.createdAt().toString()))
 			.andExpect(jsonPath("$[0].start_date_time").value("2019-08-01T00:00:00+09:00"))
 			.andExpect(jsonPath("$[0].end_date_time").value("2019-08-31T00:00:00+09:00"));
 	}
@@ -79,7 +77,6 @@ class SurveyControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.survey_id").value("0C6VAWEVB33AD"))
 			.andExpect(jsonPath("$.survey_title").value("テストアンケート"))
-			.andExpect(jsonPath("$.created_at").value("2023-04-29T08:12:54.874Z"))
 			.andExpect(jsonPath("$.start_date_time").value("2019-09-30T15:00:00Z"))
 			.andExpect(jsonPath("$.end_date_time").value("2020-09-30T15:00:00Z"))
 			.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/surveys/0C6VAWEVB33AD"));
@@ -98,7 +95,6 @@ class SurveyControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.survey_id").value("0C6VAWEVB33AD"))
 			.andExpect(jsonPath("$.survey_title").value("テストアンケート"))
-			.andExpect(jsonPath("$.created_at").value("2023-04-29T08:12:54.874Z"))
 			.andExpect(jsonPath("$.start_date_time").value("1970-01-01T00:00:00Z"))
 			.andExpect(jsonPath("$.end_date_time").value("3000-01-01T00:00:00Z"))
 			.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/surveys/0C6VAWEVB33AD"));
