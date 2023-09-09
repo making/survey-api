@@ -14,7 +14,7 @@ public class MockQuestionRepository extends QuestionRepository {
 	}
 
 	public MockQuestionRepository() {
-		super(null, null);
+		super(null, jdbcTemplate, null);
 	}
 
 	@Override

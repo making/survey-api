@@ -1,7 +1,5 @@
 package am.ik.surveys.questiongroup;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +11,7 @@ import org.mybatis.scripting.thymeleaf.SqlGenerator;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,22 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class QuestionGroupRepository {
 
-	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final JdbcClient jdbcClient;
 
 	private final SqlGenerator sqlGenerator;
 
-	private RowMapper<QuestionGroup> rowMapper = new RowMapper<QuestionGroup>() {
-		@Override
-		public QuestionGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getString("question_group_id"));
-			final String questionGroupTitle = rs.getString("question_group_title");
-			final String questionGroupType = rs.getString("question_group_type");
-			return new QuestionGroup(questionGroupId, questionGroupTitle, questionGroupType);
-		}
+	private RowMapper<QuestionGroup> rowMapper = (rs, rowNum) -> {
+		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getString("question_group_id"));
+		final String questionGroupTitle = rs.getString("question_group_title");
+		final String questionGroupType = rs.getString("question_group_type");
+		return new QuestionGroup(questionGroupId, questionGroupTitle, questionGroupType);
 	};
 
-	public QuestionGroupRepository(NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
-		this.jdbcTemplate = jdbcTemplate;
+	public QuestionGroupRepository(JdbcClient jdbcClient, SqlGenerator sqlGenerator) {
+		this.jdbcClient = jdbcClient;
 		this.sqlGenerator = sqlGenerator;
 	}
 
@@ -45,12 +40,12 @@ public class QuestionGroupRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource();
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findAll.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.query(sql, params, rowMapper);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
 	@Transactional(readOnly = true)
 	public Optional<QuestionGroup> findById(QuestionGroupId questionGroupId) {
-		return Optional.ofNullable(DataAccessUtils.singleResult(this.findByIds(Set.of(questionGroupId))));
+		return DataAccessUtils.optionalResult(this.findByIds(Set.of(questionGroupId)));
 	}
 
 	@Transactional(readOnly = true)
@@ -66,7 +61,7 @@ public class QuestionGroupRepository {
 		}
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findByIds.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.query(sql, params, rowMapper);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
 	public int insert(QuestionGroup questionGroup) {
@@ -76,7 +71,7 @@ public class QuestionGroupRepository {
 			.addValue("questionGroupType", questionGroup.questionGroupType());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/insert.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int deleteById(QuestionGroupId questionGroupId) {
@@ -84,7 +79,7 @@ public class QuestionGroupRepository {
 				questionGroupId.asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/deleteById.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 }

@@ -8,9 +8,11 @@ import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class QuestionGroupQuestionRepository {
 
-	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final JdbcClient jdbcClient;
 
 	private final SqlGenerator sqlGenerator;
 
@@ -29,8 +31,8 @@ public class QuestionGroupQuestionRepository {
 		return new QuestionGroupQuestion(new QuestionGroupQuestionId(questionGroupId, questionId), required);
 	};
 
-	public QuestionGroupQuestionRepository(NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
-		this.jdbcTemplate = jdbcTemplate;
+	public QuestionGroupQuestionRepository(JdbcClient jdbcClient, SqlGenerator sqlGenerator) {
+		this.jdbcClient = jdbcClient;
 		this.sqlGenerator = sqlGenerator;
 	}
 
@@ -53,7 +55,7 @@ public class QuestionGroupQuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questiongroupquestion/findByQuestionGroupIds.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.query(sql, params, rowMapper);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
 	public int insert(QuestionGroupQuestion questionGroupQuestion) {
@@ -65,7 +67,7 @@ public class QuestionGroupQuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questiongroupquestion/insert.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int deleteById(QuestionGroupQuestionId questionGroupQuestionId) {
@@ -75,7 +77,7 @@ public class QuestionGroupQuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questiongroupquestion/deleteById.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int deleteByQuestionGroupId(QuestionGroupId questionGroupId) {
@@ -84,7 +86,7 @@ public class QuestionGroupQuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questiongroupquestion/deleteByQuestionGroupId.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 }

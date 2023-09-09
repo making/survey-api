@@ -8,7 +8,7 @@ import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SurveyQuestionGroupRepository {
 
-	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final JdbcClient jdbcClient;
 
 	private final SqlGenerator sqlGenerator;
 
@@ -26,8 +26,8 @@ public class SurveyQuestionGroupRepository {
 		return new SurveyQuestionGroup(surveyId, questionGroupId);
 	};
 
-	public SurveyQuestionGroupRepository(NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
-		this.jdbcTemplate = jdbcTemplate;
+	public SurveyQuestionGroupRepository(JdbcClient jdbcClient, SqlGenerator sqlGenerator) {
+		this.jdbcClient = jdbcClient;
 		this.sqlGenerator = sqlGenerator;
 	}
 
@@ -37,7 +37,7 @@ public class SurveyQuestionGroupRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/surveyquestiongroup/findBySurveyId.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.query(sql, params, rowMapper);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
 	public int insert(SurveyQuestionGroup surveyQuestionGroup) {
@@ -46,7 +46,7 @@ public class SurveyQuestionGroupRepository {
 			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/surveyquestiongroup/insert.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int delete(SurveyQuestionGroup surveyQuestionGroup) {
@@ -55,7 +55,7 @@ public class SurveyQuestionGroupRepository {
 			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/surveyquestiongroup/delete.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int deleteBySurveyId(SurveyId surveyId) {
@@ -63,7 +63,7 @@ public class SurveyQuestionGroupRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/surveyquestiongroup/deleteBySurveyId.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 }

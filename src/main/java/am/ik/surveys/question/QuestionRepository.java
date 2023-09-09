@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +23,8 @@ import org.springframework.util.CollectionUtils;
 @Repository
 @Transactional
 public class QuestionRepository {
+
+	private final JdbcClient jdbcClient;
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -65,7 +68,9 @@ public class QuestionRepository {
 		return questions;
 	};
 
-	public QuestionRepository(NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
+	public QuestionRepository(JdbcClient jdbcClient, NamedParameterJdbcTemplate jdbcTemplate,
+			SqlGenerator sqlGenerator) {
+		this.jdbcClient = jdbcClient;
 		this.jdbcTemplate = jdbcTemplate;
 		this.sqlGenerator = sqlGenerator;
 	}
@@ -75,7 +80,7 @@ public class QuestionRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource();
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findAll.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
 	}
 
 	@Transactional(readOnly = true)
@@ -91,12 +96,14 @@ public class QuestionRepository {
 		}
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findByIds.sql"),
 				params.getValues(), params::addValue);
+		// return
+		// this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
 		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
 	}
 
 	@Transactional(readOnly = true)
 	public Optional<Question> findById(QuestionId questionId) {
-		return Optional.ofNullable(DataAccessUtils.singleResult(this.findByIds(Set.of(questionId))));
+		return DataAccessUtils.optionalResult(this.findByIds(Set.of(questionId)));
 	}
 
 	public int insert(Question question) {
@@ -105,7 +112,7 @@ public class QuestionRepository {
 			.addValue("questionText", question.questionText());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/insert.sql"),
 				params.getValues(), params::addValue);
-		final int update = this.jdbcTemplate.update(sql, params);
+		final int update = this.jdbcClient.sql(sql).paramSource(params).update();
 		if (question instanceof final DescriptiveQuestion descriptiveQuestion) {
 			this.insertDescriptiveQuestion(descriptiveQuestion);
 		}
@@ -121,7 +128,7 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/question/insertDescriptiveQuestion.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	int insertSelectiveQuestion(SelectiveQuestion question) {
@@ -131,7 +138,7 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/question/insertSelectiveQuestion.sql"), params.getValues(),
 				params::addValue);
-		final int update = this.jdbcTemplate.update(sql, params);
+		final int update = this.jdbcClient.sql(sql).paramSource(params).update();
 		this.insertQuestionChoices(question.questionId(), question.questionChoices());
 		return update;
 	}
@@ -140,7 +147,7 @@ public class QuestionRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionId", questionId.asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/deleteById.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	@Transactional(readOnly = true)
@@ -149,7 +156,7 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questionchoice/findAllByQuestionId.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.query(sql, params, questionChoiceRowMapper);
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.questionChoiceRowMapper).list();
 	}
 
 	@Transactional(readOnly = true)
@@ -160,8 +167,7 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questionchoice/findByQuestionIdAndId.sql"), params.getValues(),
 				params::addValue);
-		return Optional
-			.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, questionChoiceRowMapper)));
+		return this.jdbcClient.sql(sql).paramSource(params).query(this.questionChoiceRowMapper).optional();
 	}
 
 	public int updateQuestionChoices(SelectiveQuestion question) {
@@ -191,7 +197,7 @@ public class QuestionRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questionchoice/deleteByQuestionId.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 }

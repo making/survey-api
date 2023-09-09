@@ -16,6 +16,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AnswerRepository {
 
+	private final JdbcClient jdbcClient;
+
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
 	private final SqlGenerator sqlGenerator;
 
-	public AnswerRepository(NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
+	public AnswerRepository(JdbcClient jdbcClient, NamedParameterJdbcTemplate jdbcTemplate, SqlGenerator sqlGenerator) {
+		this.jdbcClient = jdbcClient;
 		this.jdbcTemplate = jdbcTemplate;
 		this.sqlGenerator = sqlGenerator;
 	}
@@ -66,8 +70,8 @@ public class AnswerRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId", answerId.asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/findById.sql"),
 				params.getValues(), params::addValue);
-		return Optional
-			.ofNullable(DataAccessUtils.singleResult(this.jdbcTemplate.query(sql, params, resultSetExtractor)));
+		return DataAccessUtils
+			.optionalResult(this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor));
 	}
 
 	@Transactional(readOnly = true)
@@ -75,6 +79,8 @@ public class AnswerRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/findAllBySurveyId.sql"),
 				params.getValues(), params::addValue);
+		// return
+		// this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
 		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
 	}
 
@@ -87,7 +93,7 @@ public class AnswerRepository {
 			.addValue("respondentId", answer.respondentId().asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/insertAnswer.sql"),
 				params.getValues(), params::addValue);
-		final int update = this.jdbcTemplate.update(sql, params);
+		final int update = this.jdbcClient.sql(sql).paramSource(params).update();
 		if (answer instanceof final DescriptiveAnswer descriptiveAnswer) {
 			this.insertDescriptiveAnswer(descriptiveAnswer);
 		}
@@ -104,7 +110,7 @@ public class AnswerRepository {
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/answer/insertDescriptiveAnswer.sql"), params.getValues(),
 				params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	int insertChosenAnswer(ChosenAnswer answer) {
@@ -126,7 +132,7 @@ public class AnswerRepository {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId", answerId.asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/deleteAnswerById.sql"),
 				params.getValues(), params::addValue);
-		return this.jdbcTemplate.update(sql, params);
+		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 }
