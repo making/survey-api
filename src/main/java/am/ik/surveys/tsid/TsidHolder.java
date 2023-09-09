@@ -2,11 +2,11 @@ package am.ik.surveys.tsid;
 
 import java.time.Instant;
 
-import com.github.f4b6a3.tsid.Tsid;
+import io.hypersistence.tsid.TSID;
 
 public interface TsidHolder {
 
-	Tsid value();
+	TSID value();
 
 	default Instant asInstant() {
 		return value().getInstant();

@@ -1,9 +1,9 @@
 package am.ik.surveys.tsid;
 
-import com.github.f4b6a3.tsid.Tsid;
+import io.hypersistence.tsid.TSID;
 
 public interface TsidGenerator {
 
-	Tsid generate();
+	TSID generate();
 
 }

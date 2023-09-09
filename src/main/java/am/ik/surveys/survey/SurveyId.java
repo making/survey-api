@@ -1,15 +1,15 @@
 package am.ik.surveys.survey;
 
 import am.ik.surveys.tsid.TsidHolder;
-import com.github.f4b6a3.tsid.Tsid;
+import io.hypersistence.tsid.TSID;
 
 /**
  * アンケートID
  *
  * @param value ID
  */
-public record SurveyId(Tsid value) implements TsidHolder {
+public record SurveyId(TSID value) implements TsidHolder {
 	public static SurveyId valueOf(String s) {
-		return new SurveyId(Tsid.from(s));
+		return new SurveyId(TSID.from(s));
 	}
 }

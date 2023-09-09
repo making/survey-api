@@ -7,7 +7,7 @@ import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.QuestionRepository;
 import am.ik.surveys.question.SelectiveQuestion;
 import am.ik.surveys.tsid.TsidGenerator;
-import com.github.f4b6a3.tsid.Tsid;
+import io.hypersistence.tsid.TSID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -123,7 +123,7 @@ class QuestionControllerTest {
 
 		@Bean
 		public TsidGenerator tsidGenerator() {
-			return () -> Tsid.from("0C6VAWEVB33AD");
+			return () -> TSID.from("0C6VAWEVB33AD");
 		}
 
 		@Bean
