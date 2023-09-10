@@ -1,8 +1,11 @@
 package am.ik.surveys.tsid;
 
+import java.sql.Types;
 import java.time.Instant;
 
 import io.hypersistence.tsid.TSID;
+
+import org.springframework.jdbc.core.SqlParameterValue;
 
 public interface TsidHolder {
 
@@ -16,8 +19,8 @@ public interface TsidHolder {
 		return value().toString();
 	}
 
-	default long asLong() {
-		return value().toLong();
+	default SqlParameterValue toBytesSqlParameterValue() {
+		return new SqlParameterValue(Types.BINARY, value().toBytes());
 	}
 
 }

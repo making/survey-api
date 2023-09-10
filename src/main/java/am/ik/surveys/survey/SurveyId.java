@@ -12,4 +12,8 @@ public record SurveyId(TSID value) implements TsidHolder {
 	public static SurveyId valueOf(String s) {
 		return new SurveyId(TSID.from(s));
 	}
+
+	public static SurveyId valueOf(byte[] bytes) {
+		return new SurveyId(TSID.from(bytes));
+	}
 }

@@ -24,14 +24,10 @@ public class SurveyRepository {
 	private final SqlGenerator sqlGenerator;
 
 	private final RowMapper<Survey> rowMapper = (rs, rowNum) -> {
-		final SurveyId surveyId = SurveyId.valueOf(rs.getString("survey_id"));
+		final SurveyId surveyId = SurveyId.valueOf(rs.getBytes("survey_id"));
 		final String surveyTitle = rs.getString("survey_title");
-		final OffsetDateTime startDateTime = rs.getTimestamp("start_date_time")
-			.toLocalDateTime()
-			.atOffset(ZoneOffset.ofHours(9));
-		final OffsetDateTime endDateTime = rs.getTimestamp("end_date_time")
-			.toLocalDateTime()
-			.atOffset(ZoneOffset.ofHours(9));
+		final OffsetDateTime startDateTime = rs.getTimestamp("start_date_time").toInstant().atOffset(ZoneOffset.UTC);
+		final OffsetDateTime endDateTime = rs.getTimestamp("end_date_time").toInstant().atOffset(ZoneOffset.UTC);
 		return new Survey(surveyId, surveyTitle, startDateTime, endDateTime);
 	};
 
@@ -44,13 +40,14 @@ public class SurveyRepository {
 	public List<Survey> findAll() {
 		final MapSqlParameterSource params = new MapSqlParameterSource();
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/findAll.sql"),
-				params.getValues(), params::addValue);
+				params.getValues());
 		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
 	@Transactional(readOnly = true)
 	public Optional<Survey> findById(SurveyId surveyId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asString());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId",
+				surveyId.toBytesSqlParameterValue());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/findById.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).optional();
@@ -58,7 +55,7 @@ public class SurveyRepository {
 
 	public int insert(Survey survey) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("surveyId", survey.surveyId().asString())
+			.addValue("surveyId", survey.surveyId().toBytesSqlParameterValue())
 			.addValue("surveyTitle", survey.surveyTitle())
 			.addValue("startDateTime", Timestamp.from(survey.startDateTime().toInstant()))
 			.addValue("endDateTime", Timestamp.from(survey.endDateTime().toInstant()));
@@ -68,7 +65,8 @@ public class SurveyRepository {
 	}
 
 	public int deleteById(SurveyId surveyId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asString());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId",
+				surveyId.toBytesSqlParameterValue());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/deleteById.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();

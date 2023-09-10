@@ -12,4 +12,9 @@ public record AnswerId(TSID value) implements TsidHolder {
 	public static AnswerId valueOf(String s) {
 		return new AnswerId(TSID.from(s));
 	}
+
+	public static AnswerId valueOf(byte[] s) {
+		return new AnswerId(TSID.from(s));
+	}
+
 }

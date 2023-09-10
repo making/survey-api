@@ -24,7 +24,7 @@ public class QuestionGroupRepository {
 	private final SqlGenerator sqlGenerator;
 
 	private RowMapper<QuestionGroup> rowMapper = (rs, rowNum) -> {
-		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getString("question_group_id"));
+		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getBytes("question_group_id"));
 		final String questionGroupTitle = rs.getString("question_group_title");
 		final String questionGroupType = rs.getString("question_group_type");
 		return new QuestionGroup(questionGroupId, questionGroupTitle, questionGroupType);
@@ -57,7 +57,7 @@ public class QuestionGroupRepository {
 		final Iterator<QuestionGroupId> itr = questionGroupIds.iterator();
 		int i = 0;
 		while (itr.hasNext()) {
-			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().asString());
+			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().toBytesSqlParameterValue());
 		}
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findByIds.sql"),
 				params.getValues(), params::addValue);
@@ -66,7 +66,7 @@ public class QuestionGroupRepository {
 
 	public int insert(QuestionGroup questionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("questionGroupId", questionGroup.questionGroupId().asString())
+			.addValue("questionGroupId", questionGroup.questionGroupId().toBytesSqlParameterValue())
 			.addValue("questionGroupTitle", questionGroup.questionGroupTitle())
 			.addValue("questionGroupType", questionGroup.questionGroupType());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/insert.sql"),
@@ -76,7 +76,7 @@ public class QuestionGroupRepository {
 
 	public int deleteById(QuestionGroupId questionGroupId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupId",
-				questionGroupId.asString());
+				questionGroupId.toBytesSqlParameterValue());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/deleteById.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();

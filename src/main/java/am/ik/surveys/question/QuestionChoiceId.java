@@ -12,4 +12,8 @@ public record QuestionChoiceId(TSID value) implements TsidHolder {
 	public static QuestionChoiceId valueOf(String s) {
 		return new QuestionChoiceId(TSID.from(s));
 	}
+
+	public static QuestionChoiceId valueOf(byte[] s) {
+		return new QuestionChoiceId(TSID.from(s));
+	}
 }

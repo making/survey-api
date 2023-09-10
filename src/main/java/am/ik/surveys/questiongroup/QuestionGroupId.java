@@ -12,4 +12,8 @@ public record QuestionGroupId(TSID value) implements TsidHolder {
 	public static QuestionGroupId valueOf(String s) {
 		return new QuestionGroupId(TSID.from(s));
 	}
+
+	public static QuestionGroupId valueOf(byte[] s) {
+		return new QuestionGroupId(TSID.from(s));
+	}
 }

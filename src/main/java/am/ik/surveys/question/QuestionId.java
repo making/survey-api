@@ -12,4 +12,8 @@ public record QuestionId(TSID value) implements TsidHolder {
 	public static QuestionId valueOf(String s) {
 		return new QuestionId(TSID.from(s));
 	}
+
+	public static QuestionId valueOf(byte[] s) {
+		return new QuestionId(TSID.from(s));
+	}
 }
