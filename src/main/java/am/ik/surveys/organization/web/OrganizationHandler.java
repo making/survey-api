@@ -8,7 +8,7 @@ import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.organization.OrganizationRepository;
 import am.ik.surveys.organization.OrganizationUser;
 import am.ik.surveys.tsid.TsidGenerator;
-import am.ik.surveys.user.RoleRepository;
+import am.ik.surveys.role.RoleRepository;
 import am.ik.surveys.user.User;
 import am.ik.surveys.user.UserId;
 import am.ik.surveys.user.UserRepository;

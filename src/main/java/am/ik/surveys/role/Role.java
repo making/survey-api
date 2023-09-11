@@ -1,4 +1,4 @@
-package am.ik.surveys.user;
+package am.ik.surveys.role;
 
 import java.util.Set;
 

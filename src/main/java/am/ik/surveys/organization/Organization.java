@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import am.ik.surveys.user.RoleId;
+import am.ik.surveys.role.RoleId;
 import am.ik.surveys.user.UserId;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

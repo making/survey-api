@@ -4,8 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import am.ik.surveys.TestConfig;
-import am.ik.surveys.user.Role;
-import am.ik.surveys.user.RoleRepository;
+import am.ik.surveys.role.Role;
+import am.ik.surveys.role.RoleRepository;
 import am.ik.surveys.user.User;
 import am.ik.surveys.user.UserId;
 import am.ik.surveys.user.UserRepository;

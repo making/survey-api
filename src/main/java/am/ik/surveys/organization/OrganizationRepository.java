@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import am.ik.surveys.user.RoleId;
+import am.ik.surveys.role.RoleId;
 import am.ik.surveys.user.UserId;
 import am.ik.surveys.util.FileLoader;
 import am.ik.surveys.util.SetDiff;
