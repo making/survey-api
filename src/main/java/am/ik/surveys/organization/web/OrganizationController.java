@@ -35,7 +35,7 @@ public class OrganizationController {
 	public Organization getOrganization(@PathVariable OrganizationId organizationId) {
 		return this.organizationRepository.findByOrganizationId(organizationId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"The given organization id is not found (%s)".formatted(organizationId)));
+					"The given organization id is not found (%s)".formatted(organizationId.asString())));
 	}
 
 	@PostMapping(path = "")
