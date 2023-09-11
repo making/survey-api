@@ -1,5 +1,7 @@
 package am.ik.surveys.problem;
 
+import java.util.Optional;
+
 import am.ik.yavi.core.ConstraintViolationsException;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class ProblemControllerAdvice {
@@ -23,8 +26,11 @@ public class ProblemControllerAdvice {
 
 	private final Tracer tracer;
 
-	public ProblemControllerAdvice(Tracer tracer) {
-		this.tracer = tracer;
+	public ProblemControllerAdvice(Optional<Tracer> tracer) {
+		this.tracer = tracer.orElseGet(() -> {
+			log.warn("Tracer is not found. NOOP trace is used instead.");
+			return Tracer.NOOP; /* for test */
+		});
 	}
 
 	@ExceptionHandler(ResponseStatusException.class)
@@ -66,6 +72,21 @@ public class ProblemControllerAdvice {
 		final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
 		return setTraceId(problemDetail);
 	}
+
+	@ExceptionHandler(NoResourceFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ProblemDetail handleNoResourceFoundException(NoResourceFoundException e) {
+		final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+		return setTraceId(problemDetail);
+	}
+
+	// @ExceptionHandler(AccessDeniedException.class)
+	// @ResponseStatus(HttpStatus.FORBIDDEN)
+	// public ProblemDetail handleAccessDeniedException(AccessDeniedException e) {
+	// final ProblemDetail problemDetail =
+	// ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
+	// return setTraceId(problemDetail);
+	// }
 
 	@ExceptionHandler(RuntimeException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
