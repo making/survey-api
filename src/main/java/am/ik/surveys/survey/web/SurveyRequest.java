@@ -5,16 +5,20 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.survey.Survey;
 import am.ik.surveys.survey.SurveyId;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-class SurveyRequest {
+public class SurveyRequest {
 
 	private String surveyTitle = "";
 
 	private OffsetDateTime startDateTime = Instant.ofEpochSecond(0).atOffset(ZoneOffset.UTC);
 
 	private OffsetDateTime endDateTime = LocalDate.of(3000, 1, 1).atStartOfDay().atOffset(ZoneOffset.UTC);
+
+	private boolean isPublic = false;
 
 	public String getSurveyTitle() {
 		return surveyTitle;
@@ -40,8 +44,18 @@ class SurveyRequest {
 		this.endDateTime = endDateTime;
 	}
 
-	public Survey toSurvey(SurveyId surveyId) {
-		return new Survey(surveyId, this.surveyTitle, this.startDateTime, this.endDateTime);
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	@JsonProperty("is_public")
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	public Survey toSurvey(SurveyId surveyId, OrganizationId organizationId) {
+		return new Survey(surveyId, this.surveyTitle, this.startDateTime, this.endDateTime, organizationId,
+				this.isPublic);
 	}
 
 }

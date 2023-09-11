@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import am.ik.surveys.organization.OrganizationId;
+
 /**
  * @param questionId 設問ID
+ * @param organizationId 組織ID
  * @param questionText 設問文
  * @param questionChoices 設問選択肢リスト
  * @param maxChoices 選択可能数
  */
-public record SelectiveQuestion(QuestionId questionId, String questionText, List<QuestionChoice> questionChoices,
-		int maxChoices) implements Question {
+public record SelectiveQuestion(QuestionId questionId, OrganizationId organizationId, String questionText,
+		List<QuestionChoice> questionChoices, int maxChoices) implements Question {
 	public SelectiveQuestion withQuestionChoices(List<QuestionChoice> questionChoices) {
-		return new SelectiveQuestion(this.questionId, this.questionText, questionChoices, this.maxChoices);
+		return new SelectiveQuestion(this.questionId, this.organizationId, this.questionText, questionChoices,
+				this.maxChoices);
 	}
 
 	public SelectiveQuestion addQuestionChoice(QuestionChoice questionChoice) {

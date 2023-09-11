@@ -11,6 +11,7 @@ import am.ik.surveys.answer.ChosenItem;
 import am.ik.surveys.answer.DescriptiveAnswer;
 import am.ik.surveys.answer.Respondent;
 import am.ik.surveys.answer.RespondentId;
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.question.DescriptiveQuestion;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
@@ -30,27 +31,29 @@ import static java.util.stream.Collectors.toMap;
 
 public class Fixtures {
 
+	public static OrganizationId organizationId = OrganizationId.valueOf("0DHXSDEM47X7Z");
+
 	public static final List<Survey> surveys = List.of(
 			new Survey(SurveyId.valueOf("0C6VQGH19C6HY"), "テストアンケート", OffsetDateTime.parse("2019-08-01T00:00:00+09:00"),
-					OffsetDateTime.parse("2019-08-31T00:00:00+09:00")),
+					OffsetDateTime.parse("2019-08-31T00:00:00+09:00"), organizationId, true),
 			new Survey(SurveyId.valueOf("0C7510JMXF9C2"), "Demo Survey",
 					OffsetDateTime.parse("2019-10-01T00:00:00+09:00"),
-					OffsetDateTime.parse("2019-10-05T00:00:00+09:00")));
+					OffsetDateTime.parse("2019-10-05T00:00:00+09:00"), organizationId, false));
 
 	public static final Map<SurveyId, Survey> surveyMap = surveys.stream().collect(toMap(Survey::surveyId, identity()));
 
 	public static final Survey s1 = surveys.get(0);
 
-	public static final QuestionGroup qg1 = new QuestionGroup(QuestionGroupId.valueOf("0C6VQGH1DC6H1"), "テストアンケート",
-			"default");
+	public static final QuestionGroup qg1 = new QuestionGroup(QuestionGroupId.valueOf("0C6VQGH1DC6H1"), organizationId,
+			"テストアンケート", "default");
 
 	public static final List<Question> questions = List.of(
-			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6HZ"), "この設計はいけてますか?",
+			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6HZ"), organizationId, "この設計はいけてますか?",
 					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG554"), "はい", 1),
 							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG555"), "いいえ", 0)),
 					1),
-			new DescriptiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J0"), "どういうところがいけてますか?"),
-			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J1"), "他にも取り上げて欲しい設計がありますか?",
+			new DescriptiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J0"), organizationId, "どういうところがいけてますか?"),
+			new SelectiveQuestion(QuestionId.valueOf("0C6VQGH1DC6J1"), organizationId, "他にも取り上げて欲しい設計がありますか?",
 					List.of(new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV43G54Z"), "在庫", 0),
 							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG550"), "カート", 0),
 							new QuestionChoice(QuestionChoiceId.valueOf("0C6WYJV4BG551"), "お気に入り", 0),

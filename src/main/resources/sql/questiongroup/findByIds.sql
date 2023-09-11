@@ -1,4 +1,5 @@
 SELECT question_group_id,
+       organization_id,
        question_group_title,
        question_group_type
 FROM question_group

@@ -6,18 +6,21 @@ API_URL=${API_URL:-http://localhost:8080}
 USERNAME=${USERNAME:-admin}
 PASSWORD=${PASSWORD:-admin}
 
+# 組織作成
+organization_id=$(curl -sf -XPOST ${API_URL}/organizations -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d "{\"organization_name\":\"Org ${RANDOM}\", \"admin_email\":\"admin@example.com\"}" | jq -r .organization_id)
+
 # アンケート作成
-survey1_id=$(curl -sf -XPOST ${API_URL}/surveys -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"survey_title":"テストアンケート", "start_date_time":"2019-10-01T00:00:00.000+09:00", "end_date_time":"2020-10-01T00:00:00.000+09:00"}' | jq -r .survey_id)
+survey1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/surveys -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"survey_title":"テストアンケート", "start_date_time":"2019-10-01T00:00:00.000+09:00", "end_date_time":"2020-10-01T00:00:00.000+09:00", "is_public": true}' | jq -r .survey_id)
 
 # 設問グループ作成
-question_group1_id=$(curl -sf -XPOST ${API_URL}/question_groups -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_group_title":"設計に関するアンケート", "question_group_type": "default"}' | jq -r .question_group_id)
+question_group1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/question_groups -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_group_title":"設計に関するアンケート", "question_group_type": "default"}' | jq -r .question_group_id)
 
 # 選択回答設問作成
-question1_id=$(curl -sf -XPOST ${API_URL}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "この設計はいけてますか?", "max_choices": 1}' | jq -r .question_id)
+question1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "この設計はいけてますか?", "max_choices": 1}' | jq -r .question_id)
 # 記述式回答設問作成
-question2_id=$(curl -sf -XPOST ${API_URL}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "どういうところがいけてますか?"}' | jq -r .question_id)
+question2_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "どういうところがいけてますか?"}' | jq -r .question_id)
 # 選択回答設問作成
-question3_id=$(curl -sf -XPOST ${API_URL}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "他にも取り上げて欲しい設計がありますか?", "max_choices": 3}' | jq -r .question_id)
+question3_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/questions -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_text": "他にも取り上げて欲しい設計がありますか?", "max_choices": 3}' | jq -r .question_id)
 
 # 設問グループと設問をマッピング
 curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_questions/${question1_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": true}'

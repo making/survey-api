@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import am.ik.surveys.Fixtures;
+import am.ik.surveys.organization.OrganizationId;
 
 public class MockSurveyRepository extends SurveyRepository {
 
@@ -21,7 +22,7 @@ public class MockSurveyRepository extends SurveyRepository {
 	}
 
 	@Override
-	public List<Survey> findAll() {
+	public List<Survey> findByOrganizationId(OrganizationId organizationId) {
 		return Fixtures.surveys;
 	}
 

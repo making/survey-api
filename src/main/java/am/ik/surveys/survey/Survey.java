@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 
 import am.ik.surveys.json.IncludeCreatedAt;
+import am.ik.surveys.organization.OrganizationId;
 
 /**
  * アンケート
@@ -13,8 +14,8 @@ import am.ik.surveys.json.IncludeCreatedAt;
  * @param startDateTime 開始予定日時
  * @param endDateTime 終了予定日時
  */
-public record Survey(SurveyId surveyId, String surveyTitle, OffsetDateTime startDateTime,
-		OffsetDateTime endDateTime) implements IncludeCreatedAt {
+public record Survey(SurveyId surveyId, String surveyTitle, OffsetDateTime startDateTime, OffsetDateTime endDateTime,
+		OrganizationId organizationId, boolean isPublic) implements IncludeCreatedAt {
 
 	@Override
 	public Instant createdAt() {

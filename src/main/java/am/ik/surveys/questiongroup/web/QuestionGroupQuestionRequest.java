@@ -3,7 +3,7 @@ package am.ik.surveys.questiongroup.web;
 import am.ik.surveys.questiongroup.QuestionGroupQuestion;
 import am.ik.surveys.questiongroup.QuestionGroupQuestionId;
 
-class QuestionGroupQuestionRequest {
+public class QuestionGroupQuestionRequest {
 
 	private boolean required;
 

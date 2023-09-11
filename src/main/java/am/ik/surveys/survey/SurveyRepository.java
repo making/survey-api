@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
@@ -28,7 +29,9 @@ public class SurveyRepository {
 		final String surveyTitle = rs.getString("survey_title");
 		final OffsetDateTime startDateTime = rs.getTimestamp("start_date_time").toInstant().atOffset(ZoneOffset.UTC);
 		final OffsetDateTime endDateTime = rs.getTimestamp("end_date_time").toInstant().atOffset(ZoneOffset.UTC);
-		return new Survey(surveyId, surveyTitle, startDateTime, endDateTime);
+		final OrganizationId organizationId = OrganizationId.valueOf(rs.getBytes("organization_id"));
+		final boolean isPublic = rs.getBoolean("is_public");
+		return new Survey(surveyId, surveyTitle, startDateTime, endDateTime, organizationId, isPublic);
 	};
 
 	public SurveyRepository(JdbcClient jdbcClient, SqlGenerator sqlGenerator) {
@@ -37,9 +40,10 @@ public class SurveyRepository {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Survey> findAll() {
-		final MapSqlParameterSource params = new MapSqlParameterSource();
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/findAll.sql"),
+	public List<Survey> findByOrganizationId(OrganizationId organizationId) {
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("organizationId",
+				organizationId.toBytesSqlParameterValue());
+		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/findByOrganizationId.sql"),
 				params.getValues());
 		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
@@ -58,7 +62,9 @@ public class SurveyRepository {
 			.addValue("surveyId", survey.surveyId().toBytesSqlParameterValue())
 			.addValue("surveyTitle", survey.surveyTitle())
 			.addValue("startDateTime", Timestamp.from(survey.startDateTime().toInstant()))
-			.addValue("endDateTime", Timestamp.from(survey.endDateTime().toInstant()));
+			.addValue("endDateTime", Timestamp.from(survey.endDateTime().toInstant()))
+			.addValue("organizationId", survey.organizationId().toBytesSqlParameterValue())
+			.addValue("isPublic", survey.isPublic());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/survey/insert.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();

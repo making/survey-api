@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import am.ik.surveys.Fixtures;
+import am.ik.surveys.organization.OrganizationId;
 
 public class MockQuestionRepository extends QuestionRepository {
 
@@ -18,7 +19,7 @@ public class MockQuestionRepository extends QuestionRepository {
 	}
 
 	@Override
-	public List<Question> findAll() {
+	public List<Question> findByOrganizationId(OrganizationId organizationId) {
 		return Fixtures.questions;
 	}
 

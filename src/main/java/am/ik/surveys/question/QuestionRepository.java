@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
@@ -48,12 +49,14 @@ public class QuestionRepository {
 		SelectiveQuestion selectiveQuestion = null;
 		while (rs.next()) {
 			final QuestionId questionId = QuestionId.valueOf(rs.getBytes("question_id"));
+			final OrganizationId organizationId = OrganizationId.valueOf(rs.getBytes("organization_id"));
 			final String questionText = rs.getString("question_text");
 			final int maxChoices = rs.getInt("max_choices");
 			if (maxChoices > 0) {
 				final QuestionChoice questionChoice = questionChoiceRowMapper.mapRow(rs, 0);
 				if (selectiveQuestion == null || !questionId.equals(previousQuestionId)) {
-					selectiveQuestion = new SelectiveQuestion(questionId, questionText, new ArrayList<>(), maxChoices);
+					selectiveQuestion = new SelectiveQuestion(questionId, organizationId, questionText,
+							new ArrayList<>(), maxChoices);
 					questions.add(selectiveQuestion);
 				}
 				if (questionChoice != null) {
@@ -61,7 +64,7 @@ public class QuestionRepository {
 				}
 			}
 			else {
-				questions.add(new DescriptiveQuestion(questionId, questionText));
+				questions.add(new DescriptiveQuestion(questionId, organizationId, questionText));
 			}
 			previousQuestionId = questionId;
 		}
@@ -76,11 +79,15 @@ public class QuestionRepository {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Question> findAll() {
-		final MapSqlParameterSource params = new MapSqlParameterSource();
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/findAll.sql"),
-				params.getValues(), params::addValue);
-		return this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
+	public List<Question> findByOrganizationId(OrganizationId organizationId) {
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("organizationId",
+				organizationId.toBytesSqlParameterValue());
+		final String sql = this.sqlGenerator.generate(
+				FileLoader.loadSqlAsString("sql/question/findByOrganizationId.sql"), params.getValues(),
+				params::addValue);
+		// return
+		// this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
+		return this.jdbcTemplate.query(sql, params, this.resultSetExtractor);
 	}
 
 	@Transactional(readOnly = true)
@@ -98,7 +105,7 @@ public class QuestionRepository {
 				params.getValues(), params::addValue);
 		// return
 		// this.jdbcClient.sql(sql).paramSource(params).query(this.resultSetExtractor);
-		return this.jdbcTemplate.query(sql, params, resultSetExtractor);
+		return this.jdbcTemplate.query(sql, params, this.resultSetExtractor);
 	}
 
 	@Transactional(readOnly = true)
@@ -109,6 +116,7 @@ public class QuestionRepository {
 	public int insert(Question question) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
 			.addValue("questionId", question.questionId().toBytesSqlParameterValue())
+			.addValue("organizationId", question.organizationId().toBytesSqlParameterValue())
 			.addValue("questionText", question.questionText());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/question/insert.sql"),
 				params.getValues(), params::addValue);

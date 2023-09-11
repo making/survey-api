@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.util.FileLoader;
 import org.mybatis.scripting.thymeleaf.SqlGenerator;
 
@@ -25,9 +26,10 @@ public class QuestionGroupRepository {
 
 	private RowMapper<QuestionGroup> rowMapper = (rs, rowNum) -> {
 		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getBytes("question_group_id"));
+		final OrganizationId organizationId = OrganizationId.valueOf(rs.getBytes("organization_id"));
 		final String questionGroupTitle = rs.getString("question_group_title");
 		final String questionGroupType = rs.getString("question_group_type");
-		return new QuestionGroup(questionGroupId, questionGroupTitle, questionGroupType);
+		return new QuestionGroup(questionGroupId, organizationId, questionGroupTitle, questionGroupType);
 	};
 
 	public QuestionGroupRepository(JdbcClient jdbcClient, SqlGenerator sqlGenerator) {
@@ -36,10 +38,12 @@ public class QuestionGroupRepository {
 	}
 
 	@Transactional(readOnly = true)
-	public List<QuestionGroup> findAll() {
-		final MapSqlParameterSource params = new MapSqlParameterSource();
-		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findAll.sql"),
-				params.getValues(), params::addValue);
+	public List<QuestionGroup> findByOrganizationId(OrganizationId organizationId) {
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("organizationId",
+				organizationId.toBytesSqlParameterValue());
+		final String sql = this.sqlGenerator.generate(
+				FileLoader.loadSqlAsString("sql/questiongroup/findByOrganizationId.sql"), params.getValues(),
+				params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).query(this.rowMapper).list();
 	}
 
@@ -67,6 +71,7 @@ public class QuestionGroupRepository {
 	public int insert(QuestionGroup questionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
 			.addValue("questionGroupId", questionGroup.questionGroupId().toBytesSqlParameterValue())
+			.addValue("organizationId", questionGroup.organizationId().toBytesSqlParameterValue())
 			.addValue("questionGroupTitle", questionGroup.questionGroupTitle())
 			.addValue("questionGroupType", questionGroup.questionGroupType());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/insert.sql"),

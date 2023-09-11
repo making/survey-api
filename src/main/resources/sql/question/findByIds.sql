@@ -1,4 +1,5 @@
 SELECT que.question_id,
+       que.organization_id,
        que.question_text,
        que.max_choices,
        que.question_choice_id,
@@ -6,6 +7,7 @@ SELECT que.question_id,
        que.score,
        que.allow_free_text
 FROM (SELECT dq.question_id,
+             q.organization_id,
              q.question_text,
              NULL AS max_choices,
              NULL AS question_choice_id,
@@ -16,6 +18,7 @@ FROM (SELECT dq.question_id,
                LEFT JOIN question q on q.question_id = dq.question_id
       UNION ALL
       SELECT sq.question_id,
+             q.organization_id,
              q.question_text,
              sq.max_choices,
              qc.question_choice_id,

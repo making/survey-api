@@ -1,9 +1,10 @@
 package am.ik.surveys.questiongroup.web;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.questiongroup.QuestionGroup;
 import am.ik.surveys.questiongroup.QuestionGroupId;
 
-class QuestionGroupRequest {
+public class QuestionGroupRequest {
 
 	private String questionGroupTitle;
 
@@ -25,8 +26,8 @@ class QuestionGroupRequest {
 		this.questionGroupType = questionGroupType;
 	}
 
-	public QuestionGroup toQuestionGroup(QuestionGroupId questionGroupId) {
-		return new QuestionGroup(questionGroupId, this.questionGroupTitle, this.questionGroupType);
+	public QuestionGroup toQuestionGroup(QuestionGroupId questionGroupId, OrganizationId organizationId) {
+		return new QuestionGroup(questionGroupId, organizationId, this.questionGroupTitle, this.questionGroupType);
 	}
 
 }

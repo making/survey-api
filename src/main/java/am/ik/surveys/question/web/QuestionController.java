@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
 import am.ik.surveys.question.QuestionChoiceId;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(path = "/questions")
 public class QuestionController {
 
 	private final QuestionHandler questionHandler;
@@ -42,44 +41,45 @@ public class QuestionController {
 		this.tsidGenerator = tsidGenerator;
 	}
 
-	@GetMapping(path = "")
-	public List<Question> getQuestions() {
-		return this.questionRepository.findAll();
+	@GetMapping(path = "/organizations/{organizationId}/questions")
+	public List<Question> getQuestions(@PathVariable OrganizationId organizationId) {
+		return this.questionRepository.findByOrganizationId(organizationId);
 	}
 
-	@GetMapping(path = "", params = "question_ids")
+	@GetMapping(path = "/questions", params = "question_ids")
 	public List<Question> getQuestions(@RequestParam(name = "question_ids") Set<QuestionId> questionIds) {
 		return this.questionRepository.findByIds(questionIds);
 	}
 
-	@PostMapping(path = "")
-	public ResponseEntity<Question> postQuestions(@RequestBody QuestionRequest request, UriComponentsBuilder builder) {
+	@PostMapping(path = "/organizations/{organizationId}/questions")
+	public ResponseEntity<Question> postQuestions(@PathVariable OrganizationId organizationId,
+			@RequestBody QuestionRequest request, UriComponentsBuilder builder) {
 		final QuestionId questionId = new QuestionId(this.tsidGenerator.generate());
-		final Question question = request.toQuestion(questionId, this.tsidGenerator);
+		final Question question = request.toQuestion(questionId, organizationId, this.tsidGenerator);
 		this.questionRepository.insert(question);
 		final URI location = builder.replacePath("/questions/{questionId}").build(questionId.asString());
 		return ResponseEntity.created(location).body(question);
 	}
 
-	@GetMapping(path = "/{questionId}")
+	@GetMapping(path = "/questions/{questionId}")
 	public Question getQuestion(@PathVariable QuestionId questionId) {
 		return this.questionRepository.findById(questionId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 					"The given question id is not found (%s)".formatted(questionId.asString())));
 	}
 
-	@DeleteMapping(path = "/{questionId}")
+	@DeleteMapping(path = "/questions/{questionId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteSurvey(@PathVariable QuestionId questionId) {
 		this.questionRepository.deleteById(questionId);
 	}
 
-	@GetMapping(path = "/{questionId}/question_choices")
+	@GetMapping(path = "/questions/{questionId}/question_choices")
 	public List<QuestionChoice> getQuestionChoices(@PathVariable QuestionId questionId) {
 		return this.questionRepository.findAllQuestionChoicesByQuestionId(questionId);
 	}
 
-	@PostMapping(path = "/{questionId}/question_choices")
+	@PostMapping(path = "/questions/{questionId}/question_choices")
 	public ResponseEntity<QuestionChoice> postQuestionChoices(@PathVariable QuestionId questionId,
 			@RequestBody QuestionChoiceRequest request, UriComponentsBuilder builder) {
 		final QuestionChoice questionChoice = this.questionHandler.postQuestionChoices(questionId, request);
@@ -88,7 +88,7 @@ public class QuestionController {
 		return ResponseEntity.created(location).body(questionChoice);
 	}
 
-	@GetMapping(path = "/{questionId}/question_choices/{questionChoiceId}")
+	@GetMapping(path = "/questions/{questionId}/question_choices/{questionChoiceId}")
 	public QuestionChoice getQuestionChoice(@PathVariable QuestionId questionId,
 			@PathVariable QuestionChoiceId questionChoiceId) {
 		return this.questionRepository.findQuestionChoiceByQuestionIdAndId(questionId, questionChoiceId)
@@ -97,7 +97,7 @@ public class QuestionController {
 						.formatted(questionId.asString(), questionChoiceId.asString())));
 	}
 
-	@DeleteMapping(path = "/{questionId}/question_choices/{questionChoiceId}")
+	@DeleteMapping(path = "/questions/{questionId}/question_choices/{questionChoiceId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteQuestionChoice(@PathVariable QuestionId questionId,
 			@PathVariable QuestionChoiceId questionChoiceId) {

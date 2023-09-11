@@ -1,0 +1,1 @@
+INSERT INTO "user"(user_id, email, password) VALUES (:userId, :email, :password)

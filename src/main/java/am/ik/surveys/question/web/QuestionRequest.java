@@ -3,6 +3,7 @@ package am.ik.surveys.question.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.question.DescriptiveQuestion;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionChoice;
@@ -43,16 +44,16 @@ class QuestionRequest {
 		this.questionChoices = questionChoices;
 	}
 
-	public Question toQuestion(QuestionId questionId, TsidGenerator tsidGenerator) {
+	public Question toQuestion(QuestionId questionId, OrganizationId organizationId, TsidGenerator tsidGenerator) {
 		if (this.maxChoices != null) {
 			final List<QuestionChoice> choices = this.questionChoices.stream()
 				.map(questionChoiceRequest -> questionChoiceRequest
 					.toQuestionChoice(new QuestionChoiceId(tsidGenerator.generate())))
 				.toList();
-			return new SelectiveQuestion(questionId, this.questionText, choices, this.maxChoices);
+			return new SelectiveQuestion(questionId, organizationId, this.questionText, choices, this.maxChoices);
 		}
 		else {
-			return new DescriptiveQuestion(questionId, this.questionText);
+			return new DescriptiveQuestion(questionId, organizationId, this.questionText);
 		}
 	}
 
