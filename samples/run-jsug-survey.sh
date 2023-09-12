@@ -22,7 +22,7 @@ question5_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/quest
 
 curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_questions/${question1_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": true}'
 curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_questions/${question2_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": false}'
-curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_questions/${question3_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": true}'
+curl -sf -XPUT ${API_URL}/question_groups/${question_group1_id}/question_group_questions/${question3_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": false}'
 curl -sf -XPUT ${API_URL}/question_groups/${question_group2_id}/question_group_questions/${question1_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": true}'
 curl -sf -XPUT ${API_URL}/question_groups/${question_group2_id}/question_group_questions/${question4_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": true}'
 curl -sf -XPUT ${API_URL}/question_groups/${question_group2_id}/question_group_questions/${question5_id} -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"required": false}'
@@ -61,11 +61,11 @@ curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: appli
 
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question2_id}\", \"respondent_id\": \"demo1\", \"answer_text\": \"Spring Boot 3への移行\"}"
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question2_id}\", \"respondent_id\": \"demo2\", \"answer_text\": \"Spring Security\"}"
-curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question2_id}\", \"respondent_id\": \"demo2\", \"answer_text\": \"Spring Integration\"}"
+curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question2_id}\", \"respondent_id\": \"demo3\", \"answer_text\": \"Spring Integration\"}"
 
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question3_id}\", \"respondent_id\": \"demo1\", \"answer_text\": \"ありがとうございました。\"}"
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question3_id}\", \"respondent_id\": \"demo2\", \"answer_text\": \"お疲れさまでした。\"}"
-curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question3_id}\", \"respondent_id\": \"demo2\", \"answer_text\": \"次回も期待しています。\"}"
+curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question3_id}\", \"respondent_id\": \"demo3\", \"answer_text\": \"次回も期待しています。\"}"
 
 # アンケート回答表示
 curl -sf ${API_URL}/surveys/${survey1_id}/answers -u ${USERNAME}:${PASSWORD} | jq .

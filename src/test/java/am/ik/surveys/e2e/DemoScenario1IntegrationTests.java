@@ -35,7 +35,7 @@ import static org.mockito.BDDMockito.given;
 @Testcontainers(disabledWithoutDocker = true)
 @AutoConfigureJsonTesters
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DemoScenarioIntegrationTests {
+public class DemoScenario1IntegrationTests {
 
 	@Container
 	@ServiceConnection
