@@ -83,7 +83,7 @@ public class QuestionController {
 	public ResponseEntity<QuestionChoice> postQuestionChoices(@PathVariable QuestionId questionId,
 			@RequestBody QuestionChoiceRequest request, UriComponentsBuilder builder) {
 		final QuestionChoice questionChoice = this.questionHandler.postQuestionChoices(questionId, request);
-		final URI location = builder.replacePath("/{questionId}/question_choices/{questionChoiceId}")
+		final URI location = builder.replacePath("/questions/{questionId}/question_choices/{questionChoiceId}")
 			.build(questionId.asString(), questionChoice.questionChoiceId().asString());
 		return ResponseEntity.created(location).body(questionChoice);
 	}
