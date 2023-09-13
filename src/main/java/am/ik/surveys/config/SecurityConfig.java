@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 import static am.ik.surveys.role.Resource.ANSWER;
+import static am.ik.surveys.role.Resource.ORGANIZATION_USER;
 import static am.ik.surveys.role.Resource.QUESTION;
 import static am.ik.surveys.role.Resource.QUESTION_CHOICE;
 import static am.ik.surveys.role.Resource.QUESTION_GROUP;
@@ -45,6 +46,8 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}/question_groups").access(authorization.alwaysAuthorized(QUESTION_GROUP, LIST))
 				.requestMatchers(HttpMethod.POST, "/organizations/{organizationId}/questions").access(authorization.alwaysAuthorized(QUESTION, CREATE))
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}/questions").access(authorization.alwaysAuthorized(QUESTION, LIST))
+				.requestMatchers(HttpMethod.PUT, "/organizations/{organizationId}/organization_users").access(authorization.alwaysAuthorized(ORGANIZATION_USER, UPDATE))
+				.requestMatchers(HttpMethod.DELETE, "/organizations/{organizationId}/organization_users").access(authorization.alwaysAuthorized(ORGANIZATION_USER, DELETE))
 				.requestMatchers(HttpMethod.GET, "/surveys/{surveyId}").access(authorization.permitForPublicSurvey(SURVEY, GET))
 				.requestMatchers(HttpMethod.DELETE, "/surveys/{surveyId}").access(authorization.alwaysAuthorized(SURVEY, DELETE))
 				.requestMatchers(HttpMethod.POST, "/surveys/{surveyId}/answers").access(authorization.permitForPublicSurvey(ANSWER, CREATE))

@@ -110,7 +110,13 @@ public class DemoScenario2IntegrationTests {
 		assertThat(this.json.write(response.getBody())).isStrictlyEqualToJson("""
 				{
 				  "organization_id": "0000000000001",
-				  "organization_name": "JSUG"
+				  "organization_name": "JSUG",
+				  "users": [
+				   {
+				     "user_id": "0000000000000",
+				     "role_id": "0DHYC9EAMX7EG"
+				   }
+				 ]
 				}
 				""");
 	}

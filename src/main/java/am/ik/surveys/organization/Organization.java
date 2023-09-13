@@ -7,10 +7,8 @@ import java.util.function.Consumer;
 
 import am.ik.surveys.role.RoleId;
 import am.ik.surveys.user.UserId;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public record Organization(OrganizationId organizationId, String organizationName,
-		@JsonIgnore Set<OrganizationUser> users) {
+public record Organization(OrganizationId organizationId, String organizationName, Set<OrganizationUser> users) {
 
 	public Organization withOrganizationName(String organizationName) {
 		return new Organization(this.organizationId, organizationName, this.users);

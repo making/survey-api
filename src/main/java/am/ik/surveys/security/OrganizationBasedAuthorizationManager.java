@@ -98,8 +98,8 @@ public class OrganizationBasedAuthorizationManager implements AuthorizationManag
 			.map(Map.Entry::getValue)
 			.map(s -> s.stream().map(Permission::toAuthority).collect(Collectors.toSet()))
 			.orElse(Set.of());
-		return new AuthorizationDecision(permissions.contains(Resource.WILDCARD + "_" + this.verb)
-				|| permissions.contains(this.resource + "_" + this.verb));
+		return new AuthorizationDecision(permissions.contains(Resource.WILDCARD + "|" + this.verb)
+				|| permissions.contains(this.resource + "|" + this.verb));
 	}
 
 }

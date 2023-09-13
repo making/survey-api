@@ -6,6 +6,7 @@ import java.util.Set;
 import am.ik.surveys.TestConfig;
 import am.ik.surveys.role.Role;
 import am.ik.surveys.role.RoleRepository;
+import am.ik.surveys.role.SystemRoleName;
 import am.ik.surveys.user.User;
 import am.ik.surveys.user.UserId;
 import am.ik.surveys.user.UserRepository;
@@ -56,10 +57,10 @@ class OrganizationRepositoryTest {
 	@BeforeEach
 	void setup() {
 		if (admin == null) {
-			admin = this.roleRepository.admin();
+			admin = this.roleRepository.getByRoleName(SystemRoleName.ADMIN);
 		}
 		if (voter == null) {
-			voter = this.roleRepository.voter();
+			voter = this.roleRepository.getByRoleName(SystemRoleName.VOTER);
 		}
 		if (user1 == null) {
 			user1 = new User(new UserId(TSID.fast()), "user1@example.com", "{noop}password");
@@ -96,9 +97,6 @@ class OrganizationRepositoryTest {
 		Organization found3 = this.organizationRepository.findByOrganizationId(organizationId)
 			.orElseThrow(() -> new IllegalStateException("not found: " + organizationId));
 		assertThat(found3).isEqualTo(deleted);
-
-		System.out.println("found2=" + found2);
-		System.out.println("found3=" + found3);
 	}
 
 }

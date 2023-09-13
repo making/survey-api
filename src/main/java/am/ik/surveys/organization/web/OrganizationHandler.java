@@ -2,13 +2,18 @@ package am.ik.surveys.organization.web;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import am.ik.surveys.organization.Organization;
 import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.organization.OrganizationRepository;
 import am.ik.surveys.organization.OrganizationUser;
-import am.ik.surveys.tsid.TsidGenerator;
+import am.ik.surveys.role.Role;
+import am.ik.surveys.role.RoleId;
 import am.ik.surveys.role.RoleRepository;
+import am.ik.surveys.role.SystemRoleName;
+import am.ik.surveys.tsid.TsidGenerator;
 import am.ik.surveys.user.User;
 import am.ik.surveys.user.UserId;
 import am.ik.surveys.user.UserRepository;
@@ -59,7 +64,7 @@ public class OrganizationHandler {
 		}
 		final OrganizationId organizationId = new OrganizationId(this.tsidGenerator.generate());
 		final OrganizationUser organizationUser = new OrganizationUser(user.userId(),
-				this.roleRepository.admin().roleId());
+				this.roleRepository.getByRoleName(SystemRoleName.ADMIN).roleId());
 		final Organization organization = new Organization(organizationId, request.organizationName(),
 				Set.of(organizationUser));
 		try {
@@ -69,6 +74,42 @@ public class OrganizationHandler {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given organization is already taken.", e);
 		}
 		return organization;
+	}
+
+	private interface OrganizationUpdater {
+
+		Organization update(Organization organization, UserId userId, RoleId roleId);
+
+	}
+
+	public Organization mutate(OrganizationId organizationId, OrganizationUserRequest request,
+			OrganizationUpdater updater) {
+		final Role role = this.roleRepository.getByRoleName(request.roleName());
+		if (role == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role name: " + request.roleName());
+		}
+		final User user = this.userRepository.findByEmail(request.email()).orElseThrow(() -> {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The requested user is not found: " + request.roleName());
+		});
+		final Organization organization = this.organizationRepository.findByOrganizationId(organizationId)
+			.orElseThrow(() -> {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"The requested organizationId is not found: " + organizationId);
+			});
+		final Organization updated = updater.update(organization, user.userId(), role.roleId());
+		this.organizationRepository.save(updated);
+		return updated;
+	}
+
+	@Transactional
+	public Organization bindUser(OrganizationId organizationId, OrganizationUserRequest request) {
+		return this.mutate(organizationId, request, Organization::bind);
+	}
+
+	@Transactional
+	public Organization unbindUser(OrganizationId organizationId, OrganizationUserRequest request) {
+		return this.mutate(organizationId, request, Organization::unbind);
 	}
 
 }
