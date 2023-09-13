@@ -9,4 +9,8 @@ public enum Verb {
 		return this.name().toLowerCase();
 	}
 
+	public static Verb valueFrom(String s) {
+		return Verb.valueOf(s.toUpperCase());
+	}
+
 }

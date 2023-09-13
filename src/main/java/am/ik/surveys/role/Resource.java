@@ -16,4 +16,8 @@ public enum Resource {
 		return this.name().toLowerCase();
 	}
 
+	public static Resource valueFrom(String s) {
+		return Resource.valueOf(s.toUpperCase().replace("*", WILDCARD.name()));
+	}
+
 }

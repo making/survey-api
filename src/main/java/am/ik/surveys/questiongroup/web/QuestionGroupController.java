@@ -43,8 +43,8 @@ public class QuestionGroupController {
 		return this.questionGroupRepository.findByOrganizationId(organizationId);
 	}
 
-	@GetMapping(path = "/question_groups", params = "question_group_ids")
-	public List<QuestionGroupResponse> getQuestionGroups(
+	@GetMapping(path = "/organizations/{organizationId}/question_groups", params = "question_group_ids")
+	public List<QuestionGroupResponse> getQuestionGroups(@PathVariable OrganizationId organizationId,
 			@RequestParam(name = "question_group_ids") Set<QuestionGroupId> questionGroupIds) {
 		return this.questionGroupHandler.getQuestionGroups(questionGroupIds);
 	}

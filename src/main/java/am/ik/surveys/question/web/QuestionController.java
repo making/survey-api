@@ -46,8 +46,9 @@ public class QuestionController {
 		return this.questionRepository.findByOrganizationId(organizationId);
 	}
 
-	@GetMapping(path = "/questions", params = "question_ids")
-	public List<Question> getQuestions(@RequestParam(name = "question_ids") Set<QuestionId> questionIds) {
+	@GetMapping(path = "/organizations/{organizationId}/questions", params = "question_ids")
+	public List<Question> getQuestions(@PathVariable OrganizationId organizationId,
+			@RequestParam(name = "question_ids") Set<QuestionId> questionIds) {
 		return this.questionRepository.findByIds(questionIds);
 	}
 

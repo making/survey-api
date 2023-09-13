@@ -1,6 +1,7 @@
 package am.ik.surveys.e2e;
 
 import java.net.URI;
+import java.util.function.Consumer;
 
 import am.ik.surveys.tsid.TsidGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +56,7 @@ public class DemoScenario1IntegrationTests {
 
 	@BeforeEach
 	void setup() {
-		this.restClient = RestClient.create("http://localhost:%d".formatted(this.port));
+		this.restClient = RestClient.builder().baseUrl("http://localhost:%d".formatted(this.port)).build();
 	}
 
 	@Test
@@ -80,6 +82,10 @@ public class DemoScenario1IntegrationTests {
 				  "email": "admin@example.com"
 				}
 				""");
+	}
+
+	Consumer<HttpHeaders> configureAuth() {
+		return headers -> headers.setBasicAuth("admin@example.com", "Admin123!");
 	}
 
 	@Test
@@ -116,6 +122,7 @@ public class DemoScenario1IntegrationTests {
 		final ResponseEntity<JsonNode> response = this.restClient.post()
 			.uri("/organizations/0000000000001/surveys")
 			.contentType(MediaType.APPLICATION_JSON)
+			.headers(configureAuth())
 			.body("""
 					{
 					  "survey_title":"テストアンケート",
@@ -149,6 +156,7 @@ public class DemoScenario1IntegrationTests {
 		final ResponseEntity<JsonNode> response = this.restClient.post()
 			.uri("/organizations/0000000000001/question_groups")
 			.contentType(MediaType.APPLICATION_JSON)
+			.headers(configureAuth())
 			.body("""
 					{
 					  "question_group_title": "設計に関するアンケート",
@@ -179,6 +187,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.post()
 				.uri("/organizations/0000000000001/questions")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "question_text": "この設計はいけてますか?",
@@ -205,6 +214,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.post()
 				.uri("/organizations/0000000000001/questions")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "question_text": "どういうところがいけてますか?"
@@ -228,6 +238,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.post()
 				.uri("/organizations/0000000000001/questions")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "question_text": "他にも取り上げて欲しい設計がありますか?",
@@ -259,6 +270,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.put()
 				.uri("/question_groups/0000000000003/question_group_questions/0000000000004")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "required": true
@@ -280,6 +292,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.put()
 				.uri("/question_groups/0000000000003/question_group_questions/0000000000005")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "required": false
@@ -301,6 +314,7 @@ public class DemoScenario1IntegrationTests {
 			final ResponseEntity<JsonNode> response = this.restClient.put()
 				.uri("/question_groups/0000000000003/question_group_questions/0000000000006")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.body("""
 						{
 						  "required": true
@@ -326,6 +340,7 @@ public class DemoScenario1IntegrationTests {
 		final ResponseEntity<JsonNode> response = this.restClient.put()
 			.uri("/surveys/0000000000002/survey_question_groups/0000000000003")
 			.contentType(MediaType.APPLICATION_JSON)
+			.headers(configureAuth())
 			.retrieve()
 			.toEntity(JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -355,6 +370,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -381,6 +397,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -407,6 +424,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -433,6 +451,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -459,6 +478,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -485,6 +505,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -511,6 +532,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -533,6 +555,7 @@ public class DemoScenario1IntegrationTests {
 	void viewSurvey() throws Exception {
 		final ResponseEntity<JsonNode> response = this.restClient.get()
 			.uri("/surveys/0000000000002?include_questions=true")
+			.headers(configureAuth())
 			.retrieve()
 			.toEntity(JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -647,6 +670,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -684,6 +708,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -721,6 +746,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -758,6 +784,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -795,6 +822,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -832,6 +860,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -865,6 +894,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -894,6 +924,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -923,6 +954,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -956,6 +988,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -996,6 +1029,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -1039,6 +1073,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -1079,6 +1114,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -1116,6 +1152,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -1154,6 +1191,7 @@ public class DemoScenario1IntegrationTests {
 						}
 						""")
 				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAuth())
 				.retrieve()
 				.toEntity(JsonNode.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -1183,6 +1221,7 @@ public class DemoScenario1IntegrationTests {
 	void viewAnswer() throws Exception {
 		final ResponseEntity<JsonNode> response = this.restClient.get()
 			.uri("/surveys/0000000000002/answers")
+			.headers(configureAuth())
 			.retrieve()
 			.toEntity(JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

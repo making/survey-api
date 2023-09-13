@@ -3,14 +3,14 @@
 
 set -ex -o pipefail
 API_URL=${API_URL:-http://localhost:8080}
-USERNAME=${USERNAME:-admin}
+USERNAME=${USERNAME:-admin@example.com}
 PASSWORD=${PASSWORD:-admin}
 
 # 組織作成
 organization_id=$(curl -sf -XPOST ${API_URL}/organizations -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d "{\"organization_name\":\"Org ${RANDOM}\", \"admin_email\":\"admin@example.com\"}" | jq -r .organization_id)
 
 # アンケート作成
-survey1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/surveys -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"survey_title":"テストアンケート", "start_date_time":"2019-10-01T00:00:00.000+09:00", "end_date_time":"2020-10-01T00:00:00.000+09:00", "is_public": true}' | jq -r .survey_id)
+survey1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/surveys -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"survey_title":"テストアンケート", "start_date_time":"2019-10-01T00:00:00.000+09:00", "end_date_time":"2020-10-01T00:00:00.000+09:00", "is_public": false}' | jq -r .survey_id)
 
 # 設問グループ作成
 question_group1_id=$(curl -sf -XPOST ${API_URL}/organizations/${organization_id}/question_groups -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_group_title":"設計に関するアンケート", "question_group_type": "default"}' | jq -r .question_group_id)
@@ -41,7 +41,7 @@ question3_choice4_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/ques
 question3_choice5_id=$(curl -sf -XPOST ${API_URL}/questions/${question3_id}/question_choices -u ${USERNAME}:${PASSWORD} -H 'Content-Type: application/json' -d '{"question_choice_text": "その他", "score": 0, "allow_free_text": true}' | jq -r .question_choice_id)
 
 # アンケート表示
-curl -sf "${API_URL}/surveys/${survey1_id}?include_questions=true" | jq .
+curl -sf "${API_URL}/surveys/${survey1_id}?include_questions=true" -u ${USERNAME}:${PASSWORD} | jq .
 
 # 選択回答作成
 curl -sf -XPOST ${API_URL}/surveys/${survey1_id}/answers -H 'Content-Type: application/json' -u ${USERNAME}:${PASSWORD} -d "{\"question_group_id\": \"${question_group1_id}\", \"question_id\": \"${question1_id}\", \"respondent_id\": \"demo1\", \"choices\": [{\"question_choice_id\": \"${question1_choice1_id}\"}]}"
