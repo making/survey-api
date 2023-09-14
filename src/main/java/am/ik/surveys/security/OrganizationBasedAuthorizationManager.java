@@ -1,20 +1,14 @@
 package am.ik.surveys.security;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import am.ik.surveys.organization.OrganizationId;
-import am.ik.surveys.organization.OrganizationUserDetail;
 import am.ik.surveys.question.Question;
 import am.ik.surveys.question.QuestionId;
 import am.ik.surveys.question.QuestionRepository;
 import am.ik.surveys.questiongroup.QuestionGroup;
 import am.ik.surveys.questiongroup.QuestionGroupId;
 import am.ik.surveys.questiongroup.QuestionGroupRepository;
-import am.ik.surveys.role.Permission;
 import am.ik.surveys.role.Resource;
 import am.ik.surveys.role.Verb;
 import am.ik.surveys.survey.Survey;
@@ -25,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -88,18 +84,14 @@ public class OrganizationBasedAuthorizationManager implements AuthorizationManag
 			throw new IllegalStateException(
 					"None of 'surveyId' / `questionGroupId`/ `questionId` / `organizationId` is specified.");
 		}
-		final OrganizationUserDetail userDetail = ((SurveyUserDetails) authentication.get().getPrincipal())
-			.getUserDetail();
-		final Set<String> permissions = userDetail.permissions()
-			.entrySet()
-			.stream()
-			.filter(organization -> Objects.equals(organizationId, organization.getKey().organizationId()))
-			.findAny()
-			.map(Map.Entry::getValue)
-			.map(s -> s.stream().map(Permission::toAuthority).collect(Collectors.toSet()))
-			.orElse(Set.of());
-		return new AuthorizationDecision(permissions.contains(Resource.WILDCARD + "|" + this.verb)
-				|| permissions.contains(this.resource + "|" + this.verb));
+		final Authentication auth = authentication.get();
+		final String prefix = auth instanceof JwtAuthenticationToken ? "SCOPE_" : "";
+		return new AuthorizationDecision(auth.getAuthorities()
+			.contains(new SimpleGrantedAuthority(
+					"%s%s|%s|%s".formatted(prefix, organizationId.asString(), Resource.WILDCARD, this.verb)))
+				|| auth.getAuthorities()
+					.contains(new SimpleGrantedAuthority(
+							"%s%s|%s|%s".formatted(prefix, organizationId.asString(), this.resource, this.verb))));
 	}
 
 }

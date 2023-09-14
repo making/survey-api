@@ -8,13 +8,12 @@ import am.ik.surveys.answer.AnswerId;
 import am.ik.surveys.answer.AnswerRepository;
 import am.ik.surveys.answer.RespondentId;
 import am.ik.surveys.question.QuestionId;
-import am.ik.surveys.security.SurveyUserDetails;
 import am.ik.surveys.survey.SurveyId;
 import am.ik.surveys.tsid.TsidGenerator;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,10 +45,10 @@ public class AnswerController {
 
 	@PostMapping(path = "/surveys/{surveyId}/answers")
 	public ResponseEntity<Answer> postAnswers(@PathVariable SurveyId surveyId, @RequestBody AnswerRequest request,
-			UriComponentsBuilder builder, @AuthenticationPrincipal SurveyUserDetails userDetails) {
+			UriComponentsBuilder builder, Authentication authentication) {
 		final AnswerId answerId = new AnswerId(this.tsidGenerator.generate());
-		if (userDetails != null) {
-			request.setRespondentId(new RespondentId(userDetails.getUserDetail().user().userId().asString()));
+		if (authentication != null) {
+			request.setRespondentId(new RespondentId(authentication.getName()));
 		}
 		final Answer answer = request.toAnswer(answerId, surveyId);
 		this.answerRepository.insert(answer);

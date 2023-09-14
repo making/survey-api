@@ -1,6 +1,8 @@
 package am.ik.surveys.e2e;
 
 import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import am.ik.surveys.tsid.TsidGenerator;
@@ -53,6 +55,8 @@ public class DemoScenario1IntegrationTests {
 
 	@MockBean
 	TsidGenerator tsidGenerator;
+
+	Map<String, String> tokens = new ConcurrentHashMap<>();
 
 	@BeforeEach
 	void setup() {
@@ -108,13 +112,24 @@ public class DemoScenario1IntegrationTests {
 		}
 	}
 
+	String retrieveToken(String email, String password) {
+		return this.tokens.computeIfAbsent(email,
+				s -> this.restClient.post()
+					.uri("/token")
+					.headers(headers -> headers.setBasicAuth(email, password))
+					.retrieve()
+					.body(String.class));
+	}
+
 	Consumer<HttpHeaders> configureAdminAuth() {
-		return headers -> headers.setBasicAuth("admin@example.com", "Admin123!");
+		final String token = this.retrieveToken("admin@example.com", "Admin123!");
+		return headers -> headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 	}
 
 	Consumer<HttpHeaders> configureVoterAuth(int voterNo) {
-		return headers -> headers.setBasicAuth("voter%d@example.com".formatted(voterNo),
+		final String token = this.retrieveToken("voter%d@example.com".formatted(voterNo),
 				"Voter%d23!".formatted(voterNo));
+		return headers -> headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 	}
 
 	@Test
@@ -155,26 +170,26 @@ public class DemoScenario1IntegrationTests {
 	void putOrganizationUser() throws Exception {
 		for (int i = 1; i <= 6; i++) {
 
-		final ResponseEntity<JsonNode> response = this.restClient.put()
-			.uri("/organizations/0000000000001/organization_users")
-			.contentType(MediaType.APPLICATION_JSON)
-			.headers(configureAdminAuth())
-			.body("""
+			final ResponseEntity<JsonNode> response = this.restClient.put()
+				.uri("/organizations/0000000000001/organization_users")
+				.contentType(MediaType.APPLICATION_JSON)
+				.headers(configureAdminAuth())
+				.body("""
+						{
+						  "email": "voter%d@example.com",
+						  "role_name": "voter"
+						}
+						""".formatted(i))
+				.retrieve()
+				.toEntity(JsonNode.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+			assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+			assertThat(this.json.write(response.getBody())).isEqualToJson("""
 					{
-					  "email": "voter%d@example.com",
-					  "role_name": "voter"
+					  "organization_id": "0000000000001",
+					  "organization_name": "Test Org"
 					}
-					""".formatted(i))
-			.retrieve()
-			.toEntity(JsonNode.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-		assertThat(this.json.write(response.getBody())).isEqualToJson("""
-				{
-				  "organization_id": "0000000000001",
-				  "organization_name": "Test Org"
-				}
-				""");
+					""");
 		}
 	}
 

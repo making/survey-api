@@ -1,19 +1,29 @@
 package am.ik.surveys.security;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import am.ik.surveys.organization.OrganizationUserDetail;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class SurveyUserDetails implements UserDetails {
 
 	private final OrganizationUserDetail userDetail;
 
+	private final Collection<? extends GrantedAuthority> authorities;
+
 	public SurveyUserDetails(OrganizationUserDetail userDetail) {
 		this.userDetail = userDetail;
+		this.authorities = userDetail.permissions()
+			.entrySet()
+			.stream()
+			.flatMap(
+					e -> e.getValue().stream().map(p -> e.getKey().organizationId().asString() + "|" + p.toAuthority()))
+			.map(SimpleGrantedAuthority::new)
+			.collect(Collectors.toUnmodifiableSet());
 	}
 
 	public OrganizationUserDetail getUserDetail() {
@@ -22,7 +32,7 @@ public class SurveyUserDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Set.of();
+		return this.authorities;
 	}
 
 	@Override
@@ -32,7 +42,7 @@ public class SurveyUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.userDetail.user().email();
+		return this.userDetail.user().userId().asString();
 	}
 
 	@Override

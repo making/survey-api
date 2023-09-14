@@ -2,6 +2,12 @@ package am.ik.surveys.config;
 
 import am.ik.accesslogger.AccessLogger;
 import am.ik.surveys.security.OrganizationBasedAuthorization;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 
 import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesProperties;
 import org.springframework.boot.actuate.web.exchanges.servlet.HttpExchangesFilter;
@@ -10,6 +16,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
@@ -28,17 +37,16 @@ import static am.ik.surveys.role.Verb.LIST;
 import static am.ik.surveys.role.Verb.UPDATE;
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(HttpExchangesProperties.class)
+@EnableConfigurationProperties({ HttpExchangesProperties.class, JwtProperties.class })
 public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpExchangesProperties properties,
 			OrganizationBasedAuthorization authorization) throws Exception {
-		return http.authorizeHttpRequests(auth -> {
-			auth // @formatter:off
+		return http.authorizeHttpRequests(it -> {
+			it // @formatter:off
 				.requestMatchers("/actuator/**", "/error").permitAll()
-				.requestMatchers(HttpMethod.POST, "/users").permitAll()
-				.requestMatchers(HttpMethod.POST, "/organizations").permitAll()
+				.requestMatchers(HttpMethod.POST, "/users", "/organizations", "/token").permitAll()
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}").access(authorization.alwaysAuthorized(SURVEY, GET))
 				.requestMatchers(HttpMethod.POST, "/organizations/{organizationId}/surveys").access(authorization.alwaysAuthorized(SURVEY, CREATE))
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}/surveys").access(authorization.alwaysAuthorized(SURVEY, LIST))
@@ -70,12 +78,21 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, "/questions/{questionId}/question_choices/{questionChoiceId}").access(authorization.alwaysAuthorized(QUESTION_CHOICE, DELETE))
 				.anyRequest().denyAll();
 				// @formatter:on
-		}).httpBasic(basic -> {
-		})
-			.csrf(csrf -> csrf.disable())
+		}).httpBasic(it -> {
+		}).oauth2ResourceServer(it -> it.jwt(jwt -> {
+		}))
+			.sessionManagement(it -> it.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.csrf(it -> it.disable())
 			.addFilterAfter(new HttpExchangesFilter(new AccessLogger(), properties.getRecording().getInclude()),
 					SecurityContextHolderAwareRequestFilter.class)
 			.build();
+	}
+
+	@Bean
+	public JwtEncoder jwtEncoder(JwtProperties properties) {
+		final JWK jwk = new RSAKey.Builder(properties.publicKey()).privateKey(properties.privateKey()).build();
+		final JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+		return new NimbusJwtEncoder(jwks);
 	}
 
 }

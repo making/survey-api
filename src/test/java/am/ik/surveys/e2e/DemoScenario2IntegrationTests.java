@@ -1,6 +1,8 @@
 package am.ik.surveys.e2e;
 
 import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import am.ik.surveys.tsid.TsidGenerator;
@@ -54,6 +56,8 @@ public class DemoScenario2IntegrationTests {
 	@MockBean
 	TsidGenerator tsidGenerator;
 
+	Map<String, String> tokens = new ConcurrentHashMap<>();
+
 	@BeforeEach
 	void setup() {
 		this.restClient = RestClient.create("http://localhost:%d".formatted(this.port));
@@ -84,8 +88,18 @@ public class DemoScenario2IntegrationTests {
 				""");
 	}
 
+	String retrieveToken(String email, String password) {
+		return this.tokens.computeIfAbsent(email,
+				s -> this.restClient.post()
+					.uri("/token")
+					.headers(headers -> headers.setBasicAuth(email, password))
+					.retrieve()
+					.body(String.class));
+	}
+
 	Consumer<HttpHeaders> configureAuth() {
-		return headers -> headers.setBasicAuth("admin@example.com", "Admin123!");
+		final String token = this.retrieveToken("admin@example.com", "Admin123!");
+		return headers -> headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 	}
 
 	@Test
