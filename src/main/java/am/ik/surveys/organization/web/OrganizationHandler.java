@@ -62,7 +62,7 @@ public class OrganizationHandler {
 
 	}
 
-	public Organization mutate(OrganizationId organizationId, OrganizationUserRequest request,
+	private Organization mutate(OrganizationId organizationId, OrganizationUserRequest request,
 			OrganizationUpdater updater) {
 		final Role role = this.roleRepository.getByRoleName(request.roleName());
 		if (role == null) {
