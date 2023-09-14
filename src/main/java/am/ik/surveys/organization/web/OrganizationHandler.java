@@ -1,9 +1,6 @@
 package am.ik.surveys.organization.web;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import am.ik.surveys.organization.Organization;
 import am.ik.surveys.organization.OrganizationId;
@@ -22,7 +19,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 @Component
@@ -54,7 +50,7 @@ public class OrganizationHandler {
 			this.organizationRepository.save(organization);
 		}
 		catch (DuplicateKeyException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given organization is already taken.", e);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given organization name is already taken.", e);
 		}
 		return organization;
 	}
