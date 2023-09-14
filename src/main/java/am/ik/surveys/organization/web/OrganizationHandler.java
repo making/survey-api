@@ -50,7 +50,8 @@ public class OrganizationHandler {
 			this.organizationRepository.save(organization);
 		}
 		catch (DuplicateKeyException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given organization name is already taken.", e);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The given organization name is already taken.",
+					e);
 		}
 		return organization;
 	}
@@ -67,15 +68,12 @@ public class OrganizationHandler {
 		if (role == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role name: " + request.roleName());
 		}
-		final User user = this.userRepository.findByEmail(request.email()).orElseThrow(() -> {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The requested user is not found: " + request.roleName());
-		});
+		final User user = this.userRepository.findByEmail(request.email())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The requested user is not found: " + request.roleName()));
 		final Organization organization = this.organizationRepository.findByOrganizationId(organizationId)
-			.orElseThrow(() -> {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"The requested organizationId is not found: " + organizationId);
-			});
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The requested organizationId is not found: " + organizationId));
 		final Organization updated = updater.update(organization, user.userId(), role.roleId());
 		this.organizationRepository.save(updated);
 		return updated;
