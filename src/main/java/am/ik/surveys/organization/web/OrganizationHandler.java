@@ -45,28 +45,11 @@ public class OrganizationHandler {
 	}
 
 	@Transactional
-	public Organization createOrganization(OrganizationRequest request) {
-		final Optional<User> userOptional = this.userRepository.findByEmail(request.adminEmail());
-		User user;
-		if (StringUtils.hasText(request.adminPassword())) {
-			if (userOptional.isPresent()) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"The given email is already registered. Please don't include admin password in the request to skip account creation.");
-			}
-			final UserId userId = new UserId(this.tsidGenerator.generate());
-			// CREATE USER
-			user = new User(userId, request.adminEmail(), "{noop}%s".formatted(request.adminPassword()));
-			this.userRepository.insert(user);
-		}
-		else {
-			user = userOptional.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The given email is not found. Please include admin password in the request to create the account."));
-		}
+	public Organization createOrganization(String organizationName, UserId userId) {
 		final OrganizationId organizationId = new OrganizationId(this.tsidGenerator.generate());
-		final OrganizationUser organizationUser = new OrganizationUser(user.userId(),
+		final OrganizationUser organizationUser = new OrganizationUser(userId,
 				this.roleRepository.getByRoleName(SystemRoleName.ADMIN).roleId());
-		final Organization organization = new Organization(organizationId, request.organizationName(),
-				Set.of(organizationUser));
+		final Organization organization = new Organization(organizationId, organizationName, Set.of(organizationUser));
 		try {
 			this.organizationRepository.save(organization);
 		}

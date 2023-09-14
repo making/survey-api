@@ -5,9 +5,11 @@ import java.net.URI;
 import am.ik.surveys.organization.Organization;
 import am.ik.surveys.organization.OrganizationId;
 import am.ik.surveys.organization.OrganizationRepository;
+import am.ik.surveys.user.UserId;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +42,10 @@ public class OrganizationController {
 
 	@PostMapping(path = "")
 	public ResponseEntity<Organization> postOrganizations(@RequestBody OrganizationRequest request,
-			UriComponentsBuilder builder) {
-		final Organization organization = this.organizationHandler.createOrganization(request);
+			Authentication authentication, UriComponentsBuilder builder) {
+		final UserId userId = UserId.valueOf(authentication.getName());
+		final Organization organization = this.organizationHandler.createOrganization(request.organizationName(),
+				userId);
 		final URI location = builder.replacePath("/organizations/{organizationId}")
 			.build(organization.organizationId().asString());
 		return ResponseEntity.created(location).body(organization);

@@ -139,10 +139,10 @@ public class DemoScenario1IntegrationTests {
 		final ResponseEntity<JsonNode> response = this.restClient.post()
 			.uri("/organizations")
 			.contentType(MediaType.APPLICATION_JSON)
+			.headers(configureAdminAuth())
 			.body("""
 					{
-					  "organization_name": "Test Org",
-					  "admin_email": "admin@example.com"
+					  "organization_name": "Test Org"
 					}
 					""")
 			.retrieve()

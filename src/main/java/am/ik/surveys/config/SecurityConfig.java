@@ -46,7 +46,8 @@ public class SecurityConfig {
 		return http.authorizeHttpRequests(it -> {
 			it // @formatter:off
 				.requestMatchers("/actuator/**", "/error").permitAll()
-				.requestMatchers(HttpMethod.POST, "/users", "/organizations", "/token").permitAll()
+				.requestMatchers(HttpMethod.POST, "/users",  "/token").permitAll()
+				.requestMatchers(HttpMethod.POST,  "/organizations").authenticated()
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}").access(authorization.alwaysAuthorized(SURVEY, GET))
 				.requestMatchers(HttpMethod.POST, "/organizations/{organizationId}/surveys").access(authorization.alwaysAuthorized(SURVEY, CREATE))
 				.requestMatchers(HttpMethod.GET, "/organizations/{organizationId}/surveys").access(authorization.alwaysAuthorized(SURVEY, LIST))
