@@ -3,7 +3,6 @@ package am.ik.surveys.survey;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Set;
 
 import am.ik.surveys.TestConfig;
@@ -51,7 +50,7 @@ class SurveyRepositoryTest {
 			.param(organization.organizationName())
 			.update();
 		this.jdbcClient.sql("INSERT INTO organization(organization_id, organization_name) VALUES (?, ?)")
-			.param(organization.organizationId().asBytes())
+			.param(organization.organizationId().asLong())
 			.param(organization.organizationName())
 			.update();
 	}

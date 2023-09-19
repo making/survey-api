@@ -25,13 +25,13 @@ public class RoleRepository {
 		final List<Role> roles = new ArrayList<>();
 		Role role = null;
 		while (rs.next()) {
-			final RoleId roleId = RoleId.valueOf(rs.getBytes("role_id"));
+			final RoleId roleId = RoleId.valueOf(rs.getLong("role_id"));
 			if (role == null || !Objects.equals(roleId, role.roleId())) {
 				final String roleName = rs.getString("role_name");
 				role = new Role(roleId, roleName, new LinkedHashSet<>());
 				roles.add(role);
 			}
-			final PermissionId permissionId = PermissionId.valueOf(rs.getBytes("permission_id"));
+			final PermissionId permissionId = PermissionId.valueOf(rs.getLong("permission_id"));
 			role.permissions().add(permissionId);
 		}
 		return roles;

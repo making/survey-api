@@ -1,77 +1,77 @@
 INSERT INTO role(role_id, role_name)
-VALUES (E'\\x06c7cc4b954e9dd0', 'admin');
+VALUES (488583709592559056, 'admin');
 INSERT INTO role(role_id, role_name)
-VALUES (E'\\x06c7cc4b954e9dd1', 'voter');
+VALUES (488583709592559057, 'voter');
 
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cc91801e0e20', '*', 'get');
+VALUES (488584009884765728, '*', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cc91801e0e21', '*', 'list');
+VALUES (488584009884765729, '*', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cc91801e0e22', '*', 'create');
+VALUES (488584009884765730, '*', 'create');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cc91801e0e23', '*', 'update');
+VALUES (488584009884765731, '*', 'update');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cc91801e0e24', '*', 'delete');
+VALUES (488584009884765732, '*', 'delete');
 
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd0', E'\\x06c7cc91801e0e20');
+VALUES (488583709592559056, 488584009884765728);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd0', E'\\x06c7cc91801e0e21');
+VALUES (488583709592559056, 488584009884765729);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd0', E'\\x06c7cc91801e0e22');
+VALUES (488583709592559056, 488584009884765730);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd0', E'\\x06c7cc91801e0e23');
+VALUES (488583709592559056, 488584009884765731);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd0', E'\\x06c7cc91801e0e24');
+VALUES (488583709592559056, 488584009884765732);
 
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd0', 'survey', 'get');
+VALUES (488585410945612752, 'survey', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd1', 'question_group', 'get');
+VALUES (488585410945612753, 'question_group', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd2', 'question_group', 'list');
+VALUES (488585410945612754, 'question_group', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd3', 'question', 'get');
+VALUES (488585410945612755, 'question', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd4', 'question', 'list');
+VALUES (488585410945612756, 'question', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd5', 'question_choice', 'get');
+VALUES (488585410945612757, 'question_choice', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd6', 'question_choice', 'list');
+VALUES (488585410945612758, 'question_choice', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd7', 'survey_question_group', 'get');
+VALUES (488585410945612759, 'survey_question_group', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd8', 'survey_question_group', 'list');
+VALUES (488585410945612760, 'survey_question_group', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbd9', 'question_group_question', 'get');
+VALUES (488585410945612761, 'question_group_question', 'get');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbda', 'question_group_question', 'list');
+VALUES (488585410945612762, 'question_group_question', 'list');
 INSERT INTO permission(permission_id, resource, verb)
-VALUES (E'\\x06c7cdd7b5d9fbdb', 'answer', 'create');
+VALUES (488585410945612763, 'answer', 'create');
 
 
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd0');
+VALUES (488583709592559057, 488585410945612752);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd1');
+VALUES (488583709592559057, 488585410945612753);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd2');
+VALUES (488583709592559057, 488585410945612754);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd3');
+VALUES (488583709592559057, 488585410945612755);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd4');
+VALUES (488583709592559057, 488585410945612756);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd5');
+VALUES (488583709592559057, 488585410945612757);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd6');
+VALUES (488583709592559057, 488585410945612758);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd7');
+VALUES (488583709592559057, 488585410945612759);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd8');
+VALUES (488583709592559057, 488585410945612760);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbd9');
+VALUES (488583709592559057, 488585410945612761);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbda');
+VALUES (488583709592559057, 488585410945612762);
 INSERT INTO role_permission(role_id, permission_id)
-VALUES (E'\\x06c7cc4b954e9dd1', E'\\x06c7cdd7b5d9fbdb');
+VALUES (488583709592559057, 488585410945612763);

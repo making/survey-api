@@ -21,8 +21,8 @@ public class SurveyQuestionGroupRepository {
 	private final SqlGenerator sqlGenerator;
 
 	private final RowMapper<SurveyQuestionGroup> rowMapper = (rs, rowNum) -> {
-		final SurveyId surveyId = SurveyId.valueOf(rs.getBytes("survey_id"));
-		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getBytes("question_group_id"));
+		final SurveyId surveyId = SurveyId.valueOf(rs.getLong("survey_id"));
+		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getLong("question_group_id"));
 		return new SurveyQuestionGroup(surveyId, questionGroupId);
 	};
 
@@ -33,8 +33,7 @@ public class SurveyQuestionGroupRepository {
 
 	@Transactional(readOnly = true)
 	public List<SurveyQuestionGroup> findBySurveyId(SurveyId surveyId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId",
-				surveyId.toBytesSqlParameterValue());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asLong());
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/surveyquestiongroup/findBySurveyId.sql"), params.getValues(),
 				params::addValue);
@@ -43,8 +42,8 @@ public class SurveyQuestionGroupRepository {
 
 	public int insert(SurveyQuestionGroup surveyQuestionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("surveyId", surveyQuestionGroup.surveyId().toBytesSqlParameterValue())
-			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().toBytesSqlParameterValue());
+			.addValue("surveyId", surveyQuestionGroup.surveyId().asLong())
+			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/surveyquestiongroup/insert.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();
@@ -52,16 +51,15 @@ public class SurveyQuestionGroupRepository {
 
 	public int delete(SurveyQuestionGroup surveyQuestionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("surveyId", surveyQuestionGroup.surveyId().toBytesSqlParameterValue())
-			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().toBytesSqlParameterValue());
+			.addValue("surveyId", surveyQuestionGroup.surveyId().asLong())
+			.addValue("questionGroupId", surveyQuestionGroup.questionGroupId().asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/surveyquestiongroup/delete.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();
 	}
 
 	public int deleteBySurveyId(SurveyId surveyId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId",
-				surveyId.toBytesSqlParameterValue());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asLong());
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/surveyquestiongroup/deleteBySurveyId.sql"), params.getValues(),
 				params::addValue);

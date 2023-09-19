@@ -13,7 +13,7 @@ public record QuestionChoiceId(TSID value) implements TsidHolder {
 		return new QuestionChoiceId(TSID.from(s));
 	}
 
-	public static QuestionChoiceId valueOf(byte[] s) {
-		return new QuestionChoiceId(TSID.from(s));
+	public static QuestionChoiceId valueOf(long l) {
+		return new QuestionChoiceId(TSID.from(l));
 	}
 }

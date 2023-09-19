@@ -1,19 +1,19 @@
 CREATE TABLE IF NOT EXISTS organization
 (
-    organization_id   BYTEA PRIMARY KEY,
+    organization_id   BIGINT PRIMARY KEY,
     organization_name VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS "user"
 (
-    user_id  BYTEA PRIMARY KEY,
+    user_id  BIGINT PRIMARY KEY,
     email    VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS role
 (
-    role_id   BYTEA PRIMARY KEY,
+    role_id   BIGINT PRIMARY KEY,
     role_name VARCHAR(255) NOT NULL UNIQUE
 );
 
@@ -22,7 +22,7 @@ CREATE TYPE RESOURCE AS ENUM ('*', 'organization_user', 'survey', 'question_grou
 
 CREATE TABLE IF NOT EXISTS permission
 (
-    permission_id BYTEA PRIMARY KEY,
+    permission_id BIGINT PRIMARY KEY,
     resource      RESOURCE NOT NULL,
     verb          VERB     NOT NULL,
     UNIQUE (resource, verb)
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS permission
 
 CREATE TABLE IF NOT EXISTS role_permission
 (
-    role_id       BYTEA,
-    permission_id BYTEA,
+    role_id       BIGINT,
+    permission_id BIGINT,
     PRIMARY KEY (role_id, permission_id),
     FOREIGN KEY (role_id) REFERENCES role (role_id)
         ON DELETE CASCADE,
@@ -41,9 +41,9 @@ CREATE TABLE IF NOT EXISTS role_permission
 
 CREATE TABLE IF NOT EXISTS organization_user
 (
-    organization_id BYTEA,
-    user_id         BYTEA,
-    role_id         BYTEA,
+    organization_id BIGINT,
+    user_id         BIGINT,
+    role_id         BIGINT,
     PRIMARY KEY (organization_id, user_id),
     FOREIGN KEY (organization_id) REFERENCES organization (organization_id)
         ON DELETE CASCADE,
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS organization_user
 
 CREATE TABLE IF NOT EXISTS survey
 (
-    survey_id       BYTEA PRIMARY KEY,
-    organization_id BYTEA                    NOT NULL,
+    survey_id       BIGINT PRIMARY KEY,
+    organization_id BIGINT                   NOT NULL,
     survey_title    VARCHAR(255)             NOT NULL,
     start_date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     end_date_time   TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS survey
 
 CREATE TABLE IF NOT EXISTS question_group
 (
-    question_group_id    BYTEA PRIMARY KEY,
-    organization_id      BYTEA        NOT NULL,
+    question_group_id    BIGINT PRIMARY KEY,
+    organization_id      BIGINT       NOT NULL,
     question_group_title VARCHAR(255) NOT NULL,
     question_group_type  VARCHAR(255) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organization (organization_id)
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS question_group
 
 CREATE TABLE IF NOT EXISTS question
 (
-    question_id     BYTEA PRIMARY KEY,
-    organization_id BYTEA         NOT NULL,
+    question_id     BIGINT PRIMARY KEY,
+    organization_id BIGINT        NOT NULL,
     question_text   VARCHAR(1024) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organization (organization_id)
         ON DELETE CASCADE
@@ -85,14 +85,14 @@ CREATE TABLE IF NOT EXISTS question
 
 CREATE TABLE IF NOT EXISTS descriptive_question
 (
-    question_id BYTEA PRIMARY KEY,
+    question_id BIGINT PRIMARY KEY,
     FOREIGN KEY (question_id) REFERENCES question (question_id)
         ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS selective_question
 (
-    question_id BYTEA PRIMARY KEY,
+    question_id BIGINT PRIMARY KEY,
     max_choices INTEGER NOT NULL,
     FOREIGN KEY (question_id) REFERENCES question (question_id)
         ON DELETE CASCADE
@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS selective_question
 
 CREATE TABLE IF NOT EXISTS question_choice
 (
-    question_choice_id   BYTEA PRIMARY KEY,
-    question_id          BYTEA         NOT NULL,
+    question_choice_id   BIGINT PRIMARY KEY,
+    question_id          BIGINT        NOT NULL,
     question_choice_text VARCHAR(1024) NOT NULL,
     score                SMALLINT      NOT NULL DEFAULT 0,
     allow_free_text      BOOLEAN       NOT NULL DEFAULT FALSE,
@@ -111,8 +111,8 @@ CREATE TABLE IF NOT EXISTS question_choice
 
 CREATE TABLE IF NOT EXISTS survey_question_group
 (
-    survey_id         BYTEA NOT NULL,
-    question_group_id BYTEA NOT NULL,
+    survey_id         BIGINT NOT NULL,
+    question_group_id BIGINT NOT NULL,
     PRIMARY KEY (survey_id, question_group_id),
     FOREIGN KEY (survey_id) REFERENCES survey (survey_id)
         ON DELETE CASCADE,
@@ -122,8 +122,8 @@ CREATE TABLE IF NOT EXISTS survey_question_group
 
 CREATE TABLE IF NOT EXISTS question_group_question
 (
-    question_group_id BYTEA   NOT NULL,
-    question_id       BYTEA   NOT NULL,
+    question_group_id BIGINT  NOT NULL,
+    question_id       BIGINT  NOT NULL,
     required          BOOLEAN NOT NULL,
     PRIMARY KEY (question_group_id, question_id),
     FOREIGN KEY (question_group_id) REFERENCES question_group (question_group_id)
@@ -134,10 +134,10 @@ CREATE TABLE IF NOT EXISTS question_group_question
 
 CREATE TABLE IF NOT EXISTS answer
 (
-    answer_id         BYTEA PRIMARY KEY,
-    survey_id         BYTEA        NOT NULL,
-    question_group_id BYTEA        NOT NULL,
-    question_id       BYTEA        NOT NULL,
+    answer_id         BIGINT PRIMARY KEY,
+    survey_id         BIGINT       NOT NULL,
+    question_group_id BIGINT       NOT NULL,
+    question_id       BIGINT       NOT NULL,
     respondent_id     VARCHAR(128) NOT NULL,
     FOREIGN KEY (survey_id) REFERENCES survey (survey_id)
         ON DELETE CASCADE,
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS answer
 
 CREATE TABLE IF NOT EXISTS descriptive_answer
 (
-    answer_id   BYTEA PRIMARY KEY,
+    answer_id   BIGINT PRIMARY KEY,
     answer_text VARCHAR(1024) NOT NULL,
     FOREIGN KEY (answer_id) REFERENCES answer (answer_id)
         ON DELETE CASCADE
@@ -157,8 +157,8 @@ CREATE TABLE IF NOT EXISTS descriptive_answer
 
 CREATE TABLE IF NOT EXISTS chosen_answer
 (
-    answer_id          BYTEA NOT NULL,
-    question_choice_id BYTEA NOT NULL,
+    answer_id          BIGINT NOT NULL,
+    question_choice_id BIGINT NOT NULL,
     answer_text        VARCHAR(1024),
     PRIMARY KEY (answer_id, question_choice_id),
     FOREIGN KEY (answer_id) REFERENCES answer (answer_id)

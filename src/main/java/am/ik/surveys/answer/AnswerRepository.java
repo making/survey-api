@@ -41,20 +41,20 @@ public class AnswerRepository {
 		AnswerId previousAnswerId = null;
 		ChosenAnswer chosenAnswer = null;
 		while (rs.next()) {
-			final AnswerId answerId = AnswerId.valueOf(rs.getBytes("answer_id"));
-			final SurveyId surveyId = SurveyId.valueOf(rs.getBytes("survey_id"));
-			final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getBytes("question_group_id"));
-			final QuestionId questionId = QuestionId.valueOf(rs.getBytes("question_id"));
+			final AnswerId answerId = AnswerId.valueOf(rs.getLong("answer_id"));
+			final SurveyId surveyId = SurveyId.valueOf(rs.getLong("survey_id"));
+			final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getLong("question_group_id"));
+			final QuestionId questionId = QuestionId.valueOf(rs.getLong("question_id"));
 			final RespondentId respondentId = RespondentId.valueOf(rs.getString("respondent_id"));
 			final String answerText = rs.getString("answer_text");
-			final byte[] s = rs.getBytes("question_choice_id");
-			if (s != null) {
+			final long l = rs.getLong("question_choice_id");
+			if (l != 0) {
 				if (chosenAnswer == null || !answerId.equals(previousAnswerId)) {
 					chosenAnswer = new ChosenAnswer(answerId, surveyId, questionGroupId, questionId, respondentId,
 							new ArrayList<>());
 					answers.add(chosenAnswer);
 				}
-				chosenAnswer.chosenItems().add(new ChosenItem(QuestionChoiceId.valueOf(s), answerText));
+				chosenAnswer.chosenItems().add(new ChosenItem(QuestionChoiceId.valueOf(l), answerText));
 			}
 			else {
 				answers.add(new DescriptiveAnswer(answerId, surveyId, questionGroupId, questionId, respondentId,
@@ -67,8 +67,7 @@ public class AnswerRepository {
 
 	@Transactional(readOnly = true)
 	public Optional<Answer> findById(AnswerId answerId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId",
-				answerId.toBytesSqlParameterValue());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId", answerId.asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/findById.sql"),
 				params.getValues(), params::addValue);
 		return DataAccessUtils
@@ -77,8 +76,7 @@ public class AnswerRepository {
 
 	@Transactional(readOnly = true)
 	public List<Answer> findBySurveyId(SurveyId surveyId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId",
-				surveyId.toBytesSqlParameterValue());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("surveyId", surveyId.asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/findAllBySurveyId.sql"),
 				params.getValues(), params::addValue);
 		// return
@@ -88,10 +86,10 @@ public class AnswerRepository {
 
 	public int insert(Answer answer) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("answerId", answer.answerId().toBytesSqlParameterValue())
-			.addValue("surveyId", answer.surveyId().toBytesSqlParameterValue())
-			.addValue("questionGroupId", answer.questionGroupId().toBytesSqlParameterValue())
-			.addValue("questionId", answer.questionId().toBytesSqlParameterValue())
+			.addValue("answerId", answer.answerId().asLong())
+			.addValue("surveyId", answer.surveyId().asLong())
+			.addValue("questionGroupId", answer.questionGroupId().asLong())
+			.addValue("questionId", answer.questionId().asLong())
 			.addValue("respondentId", answer.respondentId().asString());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/insertAnswer.sql"),
 				params.getValues(), params::addValue);
@@ -107,7 +105,7 @@ public class AnswerRepository {
 
 	int insertDescriptiveAnswer(DescriptiveAnswer answer) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("answerId", answer.answerId().toBytesSqlParameterValue())
+			.addValue("answerId", answer.answerId().asLong())
 			.addValue("answerText", answer.answerText());
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/answer/insertDescriptiveAnswer.sql"), params.getValues(),
@@ -121,9 +119,8 @@ public class AnswerRepository {
 		}
 		final MapSqlParameterSource[] params = answer.chosenItems()
 			.stream()
-			.map(chosenItem -> new MapSqlParameterSource()
-				.addValue("answerId", answer.answerId().toBytesSqlParameterValue())
-				.addValue("questionChoiceId", chosenItem.questionChoiceId().toBytesSqlParameterValue())
+			.map(chosenItem -> new MapSqlParameterSource().addValue("answerId", answer.answerId().asLong())
+				.addValue("questionChoiceId", chosenItem.questionChoiceId().asLong())
 				.addValue("answerText", chosenItem.answerText()))
 			.toArray(MapSqlParameterSource[]::new);
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/insertChosenAnswer.sql"),
@@ -132,8 +129,7 @@ public class AnswerRepository {
 	}
 
 	public int deleteById(AnswerId answerId) {
-		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId",
-				answerId.toBytesSqlParameterValue());
+		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("answerId", answerId.asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/answer/deleteAnswerById.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();

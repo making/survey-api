@@ -13,7 +13,7 @@ public record RoleId(TSID value) implements TsidHolder {
 		return new RoleId(TSID.from(s));
 	}
 
-	public static RoleId valueOf(byte[] bytes) {
-		return new RoleId(TSID.from(bytes));
+	public static RoleId valueOf(long l) {
+		return new RoleId(TSID.from(l));
 	}
 }

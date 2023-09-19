@@ -13,7 +13,7 @@ public record PermissionId(TSID value) implements TsidHolder {
 		return new PermissionId(TSID.from(s));
 	}
 
-	public static PermissionId valueOf(byte[] bytes) {
-		return new PermissionId(TSID.from(bytes));
+	public static PermissionId valueOf(long l) {
+		return new PermissionId(TSID.from(l));
 	}
 }

@@ -13,7 +13,7 @@ public record UserId(TSID value) implements TsidHolder {
 		return new UserId(TSID.from(s));
 	}
 
-	public static UserId valueOf(byte[] bytes) {
-		return new UserId(TSID.from(bytes));
+	public static UserId valueOf(long l) {
+		return new UserId(TSID.from(l));
 	}
 }

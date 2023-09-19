@@ -13,7 +13,7 @@ public record QuestionGroupId(TSID value) implements TsidHolder {
 		return new QuestionGroupId(TSID.from(s));
 	}
 
-	public static QuestionGroupId valueOf(byte[] s) {
-		return new QuestionGroupId(TSID.from(s));
+	public static QuestionGroupId valueOf(long l) {
+		return new QuestionGroupId(TSID.from(l));
 	}
 }

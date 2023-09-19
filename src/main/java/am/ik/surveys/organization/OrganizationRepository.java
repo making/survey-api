@@ -39,12 +39,12 @@ public class OrganizationRepository {
 		Organization organization = null;
 		while (rs.next()) {
 			if (organization == null) {
-				final OrganizationId organizationId = OrganizationId.valueOf(rs.getBytes("organization_id"));
+				final OrganizationId organizationId = OrganizationId.valueOf(rs.getLong("organization_id"));
 				final String organizationName = rs.getString("organization_name");
 				organization = new Organization(organizationId, organizationName, new LinkedHashSet<>());
 			}
-			final UserId userId = UserId.valueOf(rs.getBytes("user_id"));
-			final RoleId roleId = RoleId.valueOf(rs.getBytes("role_id"));
+			final UserId userId = UserId.valueOf(rs.getLong("user_id"));
+			final RoleId roleId = RoleId.valueOf(rs.getLong("role_id"));
 			organization.users().add(new OrganizationUser(userId, roleId));
 		}
 		return Optional.ofNullable(organization);
@@ -55,14 +55,14 @@ public class OrganizationRepository {
 		Organization previousOrganization = null;
 		final Map<PermissionId, Permission> permissionCache = new HashMap<>();
 		while (rs.next()) {
-			final UserId userId = UserId.valueOf(rs.getBytes("user_id"));
+			final UserId userId = UserId.valueOf(rs.getLong("user_id"));
 			final String email = rs.getString("email");
 			final String password = rs.getString("password");
 			if (userDetail == null) {
 				userDetail = new OrganizationUserDetail(new User(userId, email, password), new LinkedHashMap<>());
 			}
-			final byte[] organizationIdBytes = rs.getBytes("organization_id");
-			if (organizationIdBytes == null) {
+			final long organizationIdBytes = rs.getLong("organization_id");
+			if (organizationIdBytes == 0) {
 				break;
 			}
 			final OrganizationId organizationId = OrganizationId.valueOf(organizationIdBytes);
@@ -70,8 +70,8 @@ public class OrganizationRepository {
 			if (previousOrganization == null || !previousOrganization.organizationId().equals(organizationId)) {
 				previousOrganization = new Organization(organizationId, organizationName, Set.of());
 			}
-			final byte[] permissionIdBytes = rs.getBytes("permission_id");
-			if (permissionIdBytes == null) {
+			final long permissionIdBytes = rs.getLong("permission_id");
+			if (permissionIdBytes == 0) {
 				continue;
 			}
 			final PermissionId permissionId = PermissionId.valueOf(permissionIdBytes);
@@ -100,7 +100,7 @@ public class OrganizationRepository {
 	@Transactional(readOnly = true)
 	public Optional<Organization> findByOrganizationId(OrganizationId organizationId) {
 		return this.jdbcClient.sql(FileLoader.loadSqlAsString("sql/organization/findByOrganizationId.sql"))
-			.param("organizationId", organizationId.asBytes())
+			.param("organizationId", organizationId.asLong())
 			.query(this.resultSetExtractor);
 	}
 
@@ -117,7 +117,7 @@ public class OrganizationRepository {
 			final Organization before = beforeOptional.get();
 			// UPDATE organization
 			this.jdbcClient.sql(FileLoader.loadSqlAsString("sql/organization/update.sql"))
-				.param("organizationId", organization.organizationId().asBytes())
+				.param("organizationId", organization.organizationId().asLong())
 				.param("organizationName", organization.organizationName())
 				.update();
 			final SetDiff<OrganizationUser> setDiff = SetDiff.before(before.users()).after(organization.users());
@@ -137,7 +137,7 @@ public class OrganizationRepository {
 		else {
 			// INSERT organization
 			this.jdbcClient.sql(FileLoader.loadSqlAsString("sql/organization/insert.sql"))
-				.param("organizationId", organization.organizationId().asBytes())
+				.param("organizationId", organization.organizationId().asLong())
 				.param("organizationName", organization.organizationName())
 				.update();
 			// INSERT organization_user
@@ -149,9 +149,9 @@ public class OrganizationRepository {
 	static SqlParameterSource[] organizationUsersToParams(OrganizationId organizationId,
 			Collection<OrganizationUser> organizationUsers) {
 		return organizationUsers.stream()
-			.map(ou -> new MapSqlParameterSource().addValue("organizationId", organizationId.asBytes())
-				.addValue("userId", ou.userId().asBytes())
-				.addValue("roleId", ou.roleId().asBytes()))
+			.map(ou -> new MapSqlParameterSource().addValue("organizationId", organizationId.asLong())
+				.addValue("userId", ou.userId().asLong())
+				.addValue("roleId", ou.roleId().asLong()))
 			.toArray(SqlParameterSource[]::new);
 	}
 

@@ -25,8 +25,8 @@ public class QuestionGroupRepository {
 	private final SqlGenerator sqlGenerator;
 
 	private RowMapper<QuestionGroup> rowMapper = (rs, rowNum) -> {
-		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getBytes("question_group_id"));
-		final OrganizationId organizationId = OrganizationId.valueOf(rs.getBytes("organization_id"));
+		final QuestionGroupId questionGroupId = QuestionGroupId.valueOf(rs.getLong("question_group_id"));
+		final OrganizationId organizationId = OrganizationId.valueOf(rs.getLong("organization_id"));
 		final String questionGroupTitle = rs.getString("question_group_title");
 		final String questionGroupType = rs.getString("question_group_type");
 		return new QuestionGroup(questionGroupId, organizationId, questionGroupTitle, questionGroupType);
@@ -40,7 +40,7 @@ public class QuestionGroupRepository {
 	@Transactional(readOnly = true)
 	public List<QuestionGroup> findByOrganizationId(OrganizationId organizationId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("organizationId",
-				organizationId.toBytesSqlParameterValue());
+				organizationId.asLong());
 		final String sql = this.sqlGenerator.generate(
 				FileLoader.loadSqlAsString("sql/questiongroup/findByOrganizationId.sql"), params.getValues(),
 				params::addValue);
@@ -61,7 +61,7 @@ public class QuestionGroupRepository {
 		final Iterator<QuestionGroupId> itr = questionGroupIds.iterator();
 		int i = 0;
 		while (itr.hasNext()) {
-			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().toBytesSqlParameterValue());
+			params.addValue("questionGroupIds[%d]".formatted(i++), itr.next().asLong());
 		}
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/findByIds.sql"),
 				params.getValues(), params::addValue);
@@ -70,8 +70,8 @@ public class QuestionGroupRepository {
 
 	public int insert(QuestionGroup questionGroup) {
 		final MapSqlParameterSource params = new MapSqlParameterSource()
-			.addValue("questionGroupId", questionGroup.questionGroupId().toBytesSqlParameterValue())
-			.addValue("organizationId", questionGroup.organizationId().toBytesSqlParameterValue())
+			.addValue("questionGroupId", questionGroup.questionGroupId().asLong())
+			.addValue("organizationId", questionGroup.organizationId().asLong())
 			.addValue("questionGroupTitle", questionGroup.questionGroupTitle())
 			.addValue("questionGroupType", questionGroup.questionGroupType());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/insert.sql"),
@@ -81,7 +81,7 @@ public class QuestionGroupRepository {
 
 	public int deleteById(QuestionGroupId questionGroupId) {
 		final MapSqlParameterSource params = new MapSqlParameterSource().addValue("questionGroupId",
-				questionGroupId.toBytesSqlParameterValue());
+				questionGroupId.asLong());
 		final String sql = this.sqlGenerator.generate(FileLoader.loadSqlAsString("sql/questiongroup/deleteById.sql"),
 				params.getValues(), params::addValue);
 		return this.jdbcClient.sql(sql).paramSource(params).update();

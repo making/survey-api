@@ -13,7 +13,7 @@ public record SurveyId(TSID value) implements TsidHolder {
 		return new SurveyId(TSID.from(s));
 	}
 
-	public static SurveyId valueOf(byte[] bytes) {
-		return new SurveyId(TSID.from(bytes));
+	public static SurveyId valueOf(long l) {
+		return new SurveyId(TSID.from(l));
 	}
 }

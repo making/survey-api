@@ -13,7 +13,7 @@ public record QuestionId(TSID value) implements TsidHolder {
 		return new QuestionId(TSID.from(s));
 	}
 
-	public static QuestionId valueOf(byte[] s) {
-		return new QuestionId(TSID.from(s));
+	public static QuestionId valueOf(long l) {
+		return new QuestionId(TSID.from(l));
 	}
 }

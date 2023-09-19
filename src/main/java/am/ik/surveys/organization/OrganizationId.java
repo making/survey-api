@@ -13,7 +13,7 @@ public record OrganizationId(TSID value) implements TsidHolder {
 		return new OrganizationId(TSID.from(s));
 	}
 
-	public static OrganizationId valueOf(byte[] bytes) {
-		return new OrganizationId(TSID.from(bytes));
+	public static OrganizationId valueOf(long l) {
+		return new OrganizationId(TSID.from(l));
 	}
 }
