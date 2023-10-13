@@ -1,5 +1,7 @@
 package am.ik.surveys.config;
 
+import java.util.Map;
+
 import am.ik.accesslogger.AccessLogger;
 import am.ik.surveys.security.OrganizationBasedAuthorization;
 import com.nimbusds.jose.jwk.JWK;
@@ -17,6 +19,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -94,6 +100,14 @@ public class SecurityConfig {
 		final JWK jwk = new RSAKey.Builder(properties.publicKey()).privateKey(properties.privateKey()).build();
 		final JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 		return new NimbusJwtEncoder(jwks);
+	}
+
+	@Bean
+	@SuppressWarnings("deprecation")
+	public PasswordEncoder passwordEncoder() {
+		final String idForEncode = "bcrypt";
+		return new DelegatingPasswordEncoder(idForEncode,
+				Map.of(idForEncode, new BCryptPasswordEncoder(), "noop", NoOpPasswordEncoder.getInstance()));
 	}
 
 }
